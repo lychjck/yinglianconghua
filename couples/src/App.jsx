@@ -268,12 +268,24 @@ function App() {
     return 'short';
   };
 
-  // 将长对联分成多列显示
+  // 优化分列逻辑，处理特殊情况
   const splitTextIntoColumns = (text, maxCharsPerColumn = 12) => {
+    // 如果文本长度小于等于最大列字符数，直接返回一列
     if (text.length <= maxCharsPerColumn) {
       return [text];
     }
     
+    // 检查是否是特殊情况：总长度超过一列，但第二列只有一个字
+    const commaIndex = text.indexOf('，');
+    if (commaIndex > 0 && commaIndex < text.length - 2 && text.length <= maxCharsPerColumn + 2) {
+      // 以逗号为分割点，分成两列
+      return [
+        text.substring(0, commaIndex + 1), // 包含逗号的第一部分
+        text.substring(commaIndex + 1)     // 逗号后的部分
+      ];
+    }
+    
+    // 常规情况：按最大字符数分列
     const columns = [];
     for (let i = 0; i < text.length; i += maxCharsPerColumn) {
       columns.push(text.slice(i, i + maxCharsPerColumn));
@@ -374,30 +386,7 @@ function App() {
               {animateText && (
                 <div className="couplet-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
                   <div className="couplet-container">
-                    {/* 左边对联 - 可能多列 */}
-                    <div className="multi-column-container">
-                      {splitTextIntoColumns(currentCouplet.first).map((columnText, columnIndex) => (
-                        <div 
-                          key={`first-column-${columnIndex}`}
-                          className={`vertical-column ${getColumnClass(columnText.length)}`}
-                        >
-                          {columnText.split('').map((char, charIndex) => (
-                            <div 
-                              key={`first-${columnIndex}-${charIndex}`} 
-                              className="vertical-char"
-                              style={{
-                                opacity: 0,
-                                animation: `fadeInUp 0.5s forwards ${0.3 + (columnIndex * 0.2) + (charIndex * 0.08)}s`
-                              }}
-                            >
-                              {char}
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* 右边对联 - 可能多列 */}
+                    {/* 下联（左边） */}
                     <div className="multi-column-container">
                       {splitTextIntoColumns(currentCouplet.second).map((columnText, columnIndex) => (
                         <div 
@@ -407,6 +396,29 @@ function App() {
                           {columnText.split('').map((char, charIndex) => (
                             <div 
                               key={`second-${columnIndex}-${charIndex}`} 
+                              className="vertical-char"
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 0.5s forwards ${0.3 + (splitTextIntoColumns(currentCouplet.first).reduce((total, col) => total + col.length, 0) * 0.08) + (columnIndex * 0.2) + (charIndex * 0.08)}s`
+                              }}
+                            >
+                              {char}
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* 上联（右边） */}
+                    <div className="multi-column-container">
+                      {splitTextIntoColumns(currentCouplet.first).map((columnText, columnIndex) => (
+                        <div 
+                          key={`first-column-${columnIndex}`}
+                          className={`vertical-column ${getColumnClass(columnText.length)}`}
+                        >
+                          {columnText.split('').map((char, charIndex) => (
+                            <div 
+                              key={`first-${columnIndex}-${charIndex}`} 
                               className="vertical-char"
                               style={{
                                 opacity: 0,
