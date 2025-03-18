@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景 -->
+    <rect width="390" height="844" fill="#FAFAFA"/>
+    
+    <!-- 顶部导航栏 -->
+    <rect x="0" y="0" width="390" height="88" fill="white"/>
+    <text x="195" y="58" font-family="STSong" font-size="18" fill="#333333" text-anchor="middle">对联雅集</text>
+    
+    <!-- 分类导航 -->
+    <text x="40" y="120" font-family="STSong" font-size="15" fill="#333333">精选</text>
+    <text x="100" y="120" font-family="STSong" font-size="15" fill="#999999">名家</text>
+    <text x="160" y="120" font-family="STSong" font-size="15" fill="#999999">典藏</text>
+    
+    <!-- 对联内容区域 -->
+    <rect x="20" y="150" width="350" height="580" fill="white" rx="8"/>
+    <g transform="translate(220,240)">
+        <!-- 上联 -->
+        <text font-family="STSong" font-size="24" fill="#333333" writing-mode="tb" letter-spacing="8">
+            春风得意马蹄疾
+        </text>
+        <!-- 下联 -->
+        <text x="-40" font-family="STSong" font-size="24" fill="#333333" writing-mode="tb" letter-spacing="8">
+            一日看尽长安花
+        </text>
+    </g>
+    
+    <!-- 底部导航栏 -->
+    <rect x="0" y="780" width="390" height="64" fill="white"/>
+    <g transform="translate(30,800)">
+        <text font-family="STSong" font-size="12" fill="#333333" text-anchor="middle">文库</text>
+    </g>
+    <g transform="translate(115,800)">
+        <text font-family="STSong" font-size="12" fill="#999999" text-anchor="middle">创作</text>
+    </g>
+    <g transform="translate(195,800)">
+        <text font-family="STSong" font-size="12" fill="#999999" text-anchor="middle">发现</text>
+    </g>
+    <g transform="translate(275,800)">
+        <text font-family="STSong" font-size="12" fill="#999999" text-anchor="middle">对话</text>
+    </g>
+    <g transform="translate(355,800)">
+        <text font-family="STSong" font-size="12" fill="#999999" text-anchor="middle">我的</text>
+    </g>
+</svg>
