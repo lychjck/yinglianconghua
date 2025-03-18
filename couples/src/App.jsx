@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
+import { API_BASE_URL } from './config'
 import './App.css'
+import { motion } from 'framer-motion'
 
 function App() {
   const [couplets, setCouplets] = useState([])
@@ -11,24 +13,7 @@ function App() {
   const [error, setError] = useState(null)
   const [currentCouplet, setCurrentCouplet] = useState(null)
   const [splashPosition, setSplashPosition] = useState(null)
-
-  // useEffect(() => {
-  //   fetchCouplets()
-  // }, [])
-
-  const fetchCouplets = async () => {
-    try {
-      const response = await fetch('http://10.33.202.222:8080/api/couplets')
-      if (!response.ok) {
-        throw new Error('获取对联数据失败')
-      }
-      const data = await response.json()
-      setCouplets(data)
-    } catch (err) {
-      setError(err.message)
-      console.error('Error fetching couplets:', err)
-    }
-  }
+  const [animateText, setAnimateText] = useState(true)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -59,7 +44,7 @@ function App() {
 
   const fetchRandomCouplet = async () => {
     try {
-      const response = await fetch('http://10.33.202.222:8080/api/couplets/random')
+      const response = await fetch(`${API_BASE_URL}/api/couplets/random`)
       if (!response.ok) {
         throw new Error('获取对联数据失败')
       }
@@ -68,6 +53,10 @@ function App() {
     } catch (err) {
       setError(err.message)
       console.error('Error fetching random couplet:', err)
+    } finally {
+      // 重置动画状态，触发新的动画
+      setAnimateText(false)
+      setTimeout(() => setAnimateText(true), 50)
     }
   }
 
@@ -107,8 +96,6 @@ function App() {
         <h1>对联雅集</h1>
       </header>
 
-
-
       {/* 主要内容区域 */}
       <main className="content">
         {error ? (
@@ -138,8 +125,46 @@ function App() {
                 }}
               />)}
             <div className="couplet-text">
-              <div className={`second-line ${currentCouplet.second.length <= 3 ? 'short-text' : ''}`}>{currentCouplet.second}</div>
-              <div className={`first-line ${currentCouplet.first.length <= 3 ? 'short-text' : ''}`}>{currentCouplet.first}</div>
+              {animateText && (
+                <>
+                  <div className={`first-line ${currentCouplet.first.length <= 3 ? 'short-text' : ''}`}>
+                    {currentCouplet.first.split('').map((char, index) => (
+                      <motion.div
+                        key={`first-${index}`}
+                        className="char-item"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          type: 'spring',
+                          damping: 12,
+                          stiffness: 100,
+                          delay: 0.3 + (currentCouplet.second.length * 0.08) + (index * 0.08)
+                        }}
+                      >
+                        {char}
+                      </motion.div>
+                    ))}
+                  </div>
+                  <div className={`second-line ${currentCouplet.second.length <= 3 ? 'short-text' : ''}`}>
+                    {currentCouplet.second.split('').map((char, index) => (
+                      <motion.div
+                        key={`second-${index}`}
+                        className="char-item"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          type: 'spring',
+                          damping: 12,
+                          stiffness: 100,
+                          delay: index * 0.08
+                        }}
+                      >
+                        {char}
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         ) : (
@@ -149,7 +174,7 @@ function App() {
 
       {/* 底部导航栏 */}
       <nav className="bottom-nav">
-        {navItems.map(item => (
+        {navItems.map((item) => (
           <span
             key={item}
             className={`nav-item ${activeNav === item ? 'active' : ''}`}

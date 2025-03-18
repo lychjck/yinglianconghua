@@ -1,0 +1,31 @@
+.split-text-container {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+.split-text-char {
+  display: inline-block;
+  position: relative;
+}
+
+/* 竖排文字的特殊样式 */
+.first-line .split-text-container,
+.second-line .split-text-container {
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.first-line .split-text-char,
+.second-line .split-text-char {
+  margin: 6px 0;
+  line-height: 1;
+  writing-mode: vertical-rl;
+}
+
+/* 短文本的特殊样式 */
+.short-text .split-text-char {
+  margin: 8px 0;
+} 

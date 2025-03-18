@@ -24,14 +24,12 @@
 }
 
 .header h1 {
-  font-family: 'FZFS', 'STSong', serif;
+  font-family: 'WenYueGuTiFangSong', 'FZFS', 'STSong', serif;
   font-size: 20px;
   color: #262626;
   margin: 0;
   letter-spacing: 2px;
 }
-
-
 
 .content {
   flex: 1;
@@ -105,6 +103,38 @@
   src: url('./assets/WenYue_GuTiFangSong_F.otf') format('opentype');
 }
 
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 12px;
+}
+
+.vertical-chars {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}
+
+.char-wrapper {
+  margin: 6px 0;
+  line-height: 1;
+  display: block;
+}
+
+.vertical-char {
+  display: block;
+  margin: 6px 0;
+  line-height: 1;
+}
+
+.char-container {
+  display: block;
+  margin: 6px 0;
+  line-height: 1;
+  writing-mode: vertical-rl;
+}
+
 .first-line,
 .second-line {
   font-family: 'WenYueGuTiFangSong', 'STSong', serif;
@@ -130,6 +160,11 @@
   justify-content: center;
 }
 
+.first-line.short-text .char-container,
+.second-line.short-text .char-container {
+  margin: 8px 0;
+}
+
 .bottom-nav {
   background-color: #FFFBF5;
   height: 64px;
@@ -141,7 +176,7 @@
 }
 
 .nav-item {
-  font-family: 'WenYue', 'STSong', serif;
+  font-family: 'WenYueGuTiFangSong', 'WenYue', 'STSong', serif;
   font-size: 14px;
   color: #8C8C8C;
   cursor: pointer;
@@ -150,4 +185,82 @@
 
 .nav-item.active {
   color: #333333;
+}
+
+.couplet-container {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  height: 100%;
+  width: 100%;
+}
+
+.animated-char {
+  display: inline-block;
+}
+
+.first-line,
+.second-line {
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  font-size: 28px;
+  color: #262626;
+  writing-mode: vertical-rl;
+  letter-spacing: 12px;
+  line-height: 2;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.03);
+  height: 100%;
+  padding: 0 8px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.first-line.short-text,
+.second-line.short-text {
+  font-size: 36px;
+  letter-spacing: 16px;
+  line-height: 1.8;
+  justify-content: center;
+}
+
+.first-line.short-text .char-wrapper,
+.second-line.short-text .char-wrapper {
+  margin: 8px 0;
+}
+
+.char-item {
+  display: block;
+  margin: 6px 0;
+  line-height: 1;
+}
+
+.first-line,
+.second-line {
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  font-size: 28px;
+  color: #262626;
+  writing-mode: vertical-rl;
+  letter-spacing: 12px;
+  line-height: 2;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.03);
+  height: 100%;
+  padding: 0 8px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.first-line.short-text,
+.second-line.short-text {
+  font-size: 36px;
+  letter-spacing: 16px;
+  line-height: 1.8;
+  justify-content: center;
+}
+
+.first-line.short-text .char-item,
+.second-line.short-text .char-item {
+  margin: 8px 0;
 }
