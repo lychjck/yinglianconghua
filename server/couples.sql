@@ -14,6 +14,10 @@
  Date: 18/03/2025 16:02:57
 */
 
+CREATE DATABASE IF NOT EXISTS couples CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE couples;
+
+
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
