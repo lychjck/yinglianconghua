@@ -89,6 +89,27 @@ function App() {
 
   const navItems = ['文库', '创作', '发现', '我的']
 
+  // 根据对联长度动态设置类名
+  const getColumnClass = (length) => {
+    if (length > 15) return 'very-long';
+    if (length > 10) return 'long';
+    if (length > 5) return 'medium';
+    return 'short';
+  };
+
+  // 将长对联分成多列显示
+  const splitTextIntoColumns = (text, maxCharsPerColumn = 12) => {
+    if (text.length <= maxCharsPerColumn) {
+      return [text];
+    }
+    
+    const columns = [];
+    for (let i = 0; i < text.length; i += maxCharsPerColumn) {
+      columns.push(text.slice(i, i + maxCharsPerColumn));
+    }
+    return columns;
+  };
+
   return (
     <div className="app">
       {/* 顶部标题栏 */}
@@ -126,44 +147,53 @@ function App() {
               />)}
             <div className="couplet-text">
               {animateText && (
-                <>
-                  <div className={`first-line ${currentCouplet.first.length <= 3 ? 'short-text' : ''}`}>
-                    {currentCouplet.first.split('').map((char, index) => (
-                      <motion.div
-                        key={`first-${index}`}
-                        className="char-item"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          type: 'spring',
-                          damping: 12,
-                          stiffness: 100,
-                          delay: 0.3 + (currentCouplet.second.length * 0.08) + (index * 0.08)
-                        }}
+                <div className="couplet-container">
+                  {/* 左边对联 - 可能多列 */}
+                  <div className="multi-column-container">
+                    {splitTextIntoColumns(currentCouplet.first).map((columnText, columnIndex) => (
+                      <div 
+                        key={`first-column-${columnIndex}`}
+                        className={`vertical-column ${getColumnClass(columnText.length)}`}
                       >
-                        {char}
-                      </motion.div>
+                        {columnText.split('').map((char, charIndex) => (
+                          <div 
+                            key={`first-${columnIndex}-${charIndex}`} 
+                            className="vertical-char"
+                            style={{
+                              opacity: 0,
+                              animation: `fadeInUp 0.5s forwards ${0.3 + (columnIndex * 0.2) + (charIndex * 0.08)}s`
+                            }}
+                          >
+                            {char}
+                          </div>
+                        ))}
+                      </div>
                     ))}
                   </div>
-                  <div className={`second-line ${currentCouplet.second.length <= 3 ? 'short-text' : ''}`}>
-                    {currentCouplet.second.split('').map((char, index) => (
-                      <motion.div
-                        key={`second-${index}`}
-                        className="char-item"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          type: 'spring',
-                          damping: 12,
-                          stiffness: 100,
-                          delay: index * 0.08
-                        }}
+                  
+                  {/* 右边对联 - 可能多列 */}
+                  <div className="multi-column-container">
+                    {splitTextIntoColumns(currentCouplet.second).map((columnText, columnIndex) => (
+                      <div 
+                        key={`second-column-${columnIndex}`}
+                        className={`vertical-column ${getColumnClass(columnText.length)}`}
                       >
-                        {char}
-                      </motion.div>
+                        {columnText.split('').map((char, charIndex) => (
+                          <div 
+                            key={`second-${columnIndex}-${charIndex}`} 
+                            className="vertical-char"
+                            style={{
+                              opacity: 0,
+                              animation: `fadeInUp 0.5s forwards ${(columnIndex * 0.2) + (charIndex * 0.08)}s`
+                            }}
+                          >
+                            {char}
+                          </div>
+                        ))}
+                      </div>
                     ))}
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>
@@ -171,19 +201,6 @@ function App() {
           <div className="loading">加载中...</div>
         )}
       </main>
-
-      {/* 底部导航栏 */}
-      <nav className="bottom-nav">
-        {navItems.map((item) => (
-          <span
-            key={item}
-            className={`nav-item ${activeNav === item ? 'active' : ''}`}
-            onClick={() => setActiveNav(item)}
-          >
-            {item}
-          </span>
-        ))}
-      </nav>
     </div>
   )
 }

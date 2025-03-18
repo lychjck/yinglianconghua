@@ -1,6 +1,9 @@
 .split-text-container {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 .split-text-char {
@@ -28,4 +31,4 @@
 /* 短文本的特殊样式 */
 .short-text .split-text-char {
   margin: 8px 0;
-} 
+}
