@@ -16,6 +16,10 @@ function App() {
   const [animateText, setAnimateText] = useState(true)
   const [sparkles, setSparkles] = useState([])
   const cardRef = useRef(null)
+  const [enableFireworks, setEnableFireworks] = useState(() => {
+    const saved = localStorage.getItem('enableFireworks');
+    return saved !== null ? JSON.parse(saved) : true; // 默认启用烟花特效
+  })
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -25,6 +29,10 @@ function App() {
     }, 3000)
     return () => clearInterval(timer)
   }, [isAnimating, couplets.length])
+
+  useEffect(() => {
+    localStorage.setItem('enableFireworks', JSON.stringify(enableFireworks));
+  }, [enableFireworks]);
 
   const handleTouchStart = (e) => {
     setTouchStart(e.touches ? e.touches[0].clientX : e.clientX)
@@ -74,10 +82,18 @@ function App() {
 
     if (Math.abs(distance) > minSwipeDistance) {
       setIsAnimating(true)
-      const rect = e.currentTarget.getBoundingClientRect()
-      const x = touchEnd - rect.left
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top
+      
+      // 使用视口坐标
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      const y = e.touches ? e.touches[0].clientY : e.clientY;
+      
       setSplashPosition({ x, y })
+      
+      // 只有在启用烟花特效时才创建烟花
+      if (enableFireworks) {
+        createSparkles(x, y)
+      }
+      
       fetchRandomCouplet()
       setTimeout(() => {
         setIsAnimating(false)
@@ -93,13 +109,14 @@ function App() {
   const handleClick = (e) => {
     if (isAnimating) return;
     
-    // 获取点击位置相对于卡片的坐标
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    // 获取点击位置
+    const x = e.clientX;
+    const y = e.clientY;
     
-    // 创建烟花效果
-    createSparkles(x, y);
+    // 只有在启用烟花特效时才创建烟花
+    if (enableFireworks) {
+      createSparkles(x, y);
+    }
     
     // 切换对联
     setIsAnimating(true);
@@ -111,7 +128,7 @@ function App() {
     }, 600);
   };
 
-  // 创建真正的烟花效果
+  // 创建从点击位置发射到顶部的烟花效果
   const createSparkles = (x, y) => {
     const newSparkles = [];
     
@@ -130,53 +147,93 @@ function App() {
     // 随机选择烟花主色调
     const mainColor = colors[Math.floor(Math.random() * colors.length)];
     
-    // 1. 烟花发射轨迹
-    const launchDuration = 0.5;
-    const launchStartY = window.innerHeight;
-    const launchEndY = y;
+    // 1. 烟花发射轨迹 - 从点击位置发射到顶部
+    const launchDuration = 0.8; // 增加发射持续时间
+    const launchStartX = x;
+    const launchStartY = y;
+    const launchEndX = x + (Math.random() * 60 - 30); // 减小随机偏移
+    const launchEndY = 50; // 固定在顶部位置
     
-    // 发射轨迹
+    // 发射轨迹 - 主体
     newSparkles.push({
-      id: `launch-${Date.now()}`,
-      x: x,
+      id: `launch-main-${Date.now()}`,
+      x: launchStartX,
       y: launchStartY,
-      targetX: x,
+      targetX: launchEndX,
       targetY: launchEndY,
-      size: 4,
+      size: 6, // 增大主体大小
       color: '#FFFFFF',
       duration: launchDuration,
       isLaunch: true
     });
     
-    // 发射轨迹的尾迹
-    for (let i = 0; i < 10; i++) {
+    // 发射轨迹 - 光晕效果
+    newSparkles.push({
+      id: `launch-glow-${Date.now()}`,
+      x: launchStartX,
+      y: launchStartY,
+      targetX: launchEndX,
+      targetY: launchEndY,
+      size: 12, // 更大的光晕
+      color: '#FFCC00',
+      duration: launchDuration,
+      isLaunchGlow: true
+    });
+    
+    // 发射轨迹的尾迹 - 更多的尾迹粒子
+    for (let i = 0; i < 30; i++) {
+      const progress = i / 30;
+      const pathX = launchStartX + (launchEndX - launchStartX) * progress;
+      const pathY = launchStartY + (launchEndY - launchStartY) * progress;
+      
+      // 添加一些随机偏移
+      const offsetX = Math.random() * 8 - 4;
+      const offsetY = Math.random() * 8 - 4;
+      
+      // 尾迹粒子
       newSparkles.push({
         id: `launch-trail-${Date.now()}-${i}`,
-        x: x + (Math.random() * 4 - 2),
-        y: launchStartY - (i * (launchStartY - launchEndY) / 10),
-        targetX: x + (Math.random() * 10 - 5),
-        targetY: launchStartY - ((i + 1) * (launchStartY - launchEndY) / 10),
-        size: 2,
-        color: '#FFCC00',
-        duration: launchDuration / 2,
-        delay: (i * launchDuration) / 15,
+        x: pathX + offsetX,
+        y: pathY + offsetY,
+        targetX: pathX + offsetX * 2, // 让尾迹有一点扩散效果
+        targetY: pathY + offsetY * 2,
+        size: Math.random() * 3 + 1, // 随机大小
+        color: i % 3 === 0 ? '#FFCC00' : '#FFFFFF', // 交替颜色
+        duration: 0.4,
+        delay: (i * launchDuration) / 40,
         isTrail: true
       });
+      
+      // 每隔几个粒子添加一个较大的火花
+      if (i % 5 === 0) {
+        newSparkles.push({
+          id: `launch-spark-${Date.now()}-${i}`,
+          x: pathX,
+          y: pathY,
+          targetX: pathX + (Math.random() * 20 - 10),
+          targetY: pathY + (Math.random() * 20 - 10),
+          size: Math.random() * 4 + 2,
+          color: mainColor,
+          duration: 0.3,
+          delay: (i * launchDuration) / 40,
+          isLaunchSpark: true
+        });
+      }
     }
     
-    // 2. 爆炸效果 - 延迟到发射结束
+    // 2. 爆炸效果 - 在顶部位置
     const explosionDelay = launchDuration;
     
     // 爆炸中心
     newSparkles.push({
       id: `explosion-center-${Date.now()}`,
-      x: x,
-      y: y,
-      targetX: x,
-      targetY: y,
-      size: 20,
+      x: launchEndX,
+      y: launchEndY,
+      targetX: launchEndX,
+      targetY: launchEndY,
+      size: 30, // 更大的爆炸中心
       color: '#FFFFFF',
-      duration: 0.3,
+      duration: 0.4,
       delay: explosionDelay,
       isExplosionCenter: true
     });
@@ -190,10 +247,10 @@ function App() {
       
       newSparkles.push({
         id: `explosion-ray1-${Date.now()}-${i}`,
-        x: x,
-        y: y,
-        targetX: x + Math.cos(angle) * distance,
-        targetY: y + Math.sin(angle) * distance,
+        x: launchEndX,
+        y: launchEndY,
+        targetX: launchEndX + Math.cos(angle) * distance,
+        targetY: launchEndY + Math.sin(angle) * distance,
         size: Math.random() * 4 + 3,
         color: mainColor,
         duration: duration,
@@ -212,10 +269,10 @@ function App() {
       
       newSparkles.push({
         id: `explosion-ray2-${Date.now()}-${i}`,
-        x: x,
-        y: y,
-        targetX: x + Math.cos(angle) * distance,
-        targetY: y + Math.sin(angle) * distance,
+        x: launchEndX,
+        y: launchEndY,
+        targetX: launchEndX + Math.cos(angle) * distance,
+        targetY: launchEndY + Math.sin(angle) * distance,
         size: Math.random() * 3 + 2,
         color: secondColor,
         duration: duration,
@@ -238,10 +295,10 @@ function App() {
       
       newSparkles.push({
         id: `spark-${Date.now()}-${i}`,
-        x: x,
-        y: y,
-        targetX: x + Math.cos(angle) * distance,
-        targetY: y + Math.sin(angle) * distance + gravity, // 添加重力效果
+        x: launchEndX,
+        y: launchEndY,
+        targetX: launchEndX + Math.cos(angle) * distance,
+        targetY: launchEndY + Math.sin(angle) * distance + gravity, // 添加重力效果
         size: size,
         color: sparkColor,
         duration: duration,
@@ -255,7 +312,7 @@ function App() {
     // 动画结束后清除烟花
     setTimeout(() => {
       setSparkles([]);
-    }, (explosionDelay + 2) * 1000); // 给足够的时间完成所有动画
+    }, (explosionDelay + 2.5) * 1000); // 给足够的时间完成所有动画
   };
 
   const navItems = ['文库', '创作', '发现', '我的']
@@ -293,11 +350,25 @@ function App() {
     return columns;
   };
 
+  // 添加一个切换烟花特效的函数
+  const toggleFireworks = () => {
+    setEnableFireworks(prev => !prev);
+  };
+
   return (
     <div className="app">
       {/* 顶部标题栏 */}
       <header className="header">
         <h1>对联雅集</h1>
+        <button 
+          className="toggle-fireworks-btn"
+          onClick={(e) => {
+            e.stopPropagation(); // 阻止事件冒泡，避免触发卡片的点击事件
+            toggleFireworks();
+          }}
+        >
+          {enableFireworks ? '关闭烟花' : '开启烟花'}
+        </button>
       </header>
 
       {/* 主要内容区域 */}
@@ -318,70 +389,85 @@ function App() {
             onClick={handleClick}
             style={{
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              width: '100%',
+              height: '100%'
             }}
           >
             {/* 烟花效果 */}
-            {sparkles.map(sparkle => (
-              <motion.div
-                key={sparkle.id}
-                className={`sparkle ${
-                  sparkle.isLaunch ? 'sparkle-launch' : 
-                  sparkle.isTrail ? 'sparkle-trail' : 
-                  sparkle.isExplosionCenter ? 'sparkle-center' : 
-                  sparkle.isRay ? 'sparkle-ray' : 
-                  'sparkle-spark'
-                }`}
-                initial={{ 
-                  x: sparkle.x, 
-                  y: sparkle.y, 
-                  opacity: sparkle.isExplosionCenter ? 0 : 1,
-                  scale: sparkle.isExplosionCenter ? 0 : 1
-                }}
-                animate={{ 
-                  x: sparkle.targetX, 
-                  y: sparkle.targetY, 
-                  opacity: sparkle.isLaunch ? [1, 0] : 
-                           sparkle.isTrail ? [1, 0] : 
-                           sparkle.isExplosionCenter ? [1, 0] : 
-                           [1, 1, 0.8, 0],
-                  scale: sparkle.isExplosionCenter ? [0, 4, 0] : 
-                         sparkle.isLaunch ? 1 : 
-                         sparkle.isSpark ? [1, 0.5, 0] : 
-                         [1, 0.8, 0]
-                }}
-                transition={{ 
-                  duration: sparkle.duration,
-                  ease: sparkle.isLaunch ? "easeIn" : 
-                        sparkle.isSpark ? "easeOut" : 
-                        "easeOut",
-                  delay: sparkle.delay || 0,
-                  times: sparkle.isExplosionCenter ? [0, 0.5, 1] : 
-                         sparkle.isLaunch ? [0, 1] : 
-                         sparkle.isTrail ? [0, 1] : 
-                         [0, 0.3, 0.7, 1]
-                }}
-                style={{
-                  position: 'absolute',
-                  width: sparkle.size,
-                  height: sparkle.size,
-                  borderRadius: '50%',
-                  backgroundColor: sparkle.color,
-                  boxShadow: `0 0 ${sparkle.size * 2}px ${sparkle.color}`,
-                  pointerEvents: 'none'
-                }}
-              />
-            ))}
+            <div className="fireworks-container" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 1000 }}>
+              {sparkles.map(sparkle => (
+                <motion.div
+                  key={sparkle.id}
+                  className={`sparkle ${
+                    sparkle.isLaunch ? 'sparkle-launch' : 
+                    sparkle.isLaunchGlow ? 'sparkle-launch-glow' :
+                    sparkle.isLaunchSpark ? 'sparkle-launch-spark' :
+                    sparkle.isTrail ? 'sparkle-trail' : 
+                    sparkle.isExplosionCenter ? 'sparkle-center' : 
+                    sparkle.isRay ? 'sparkle-ray' : 
+                    'sparkle-spark'
+                  }`}
+                  initial={{ 
+                    x: sparkle.x, 
+                    y: sparkle.y, 
+                    opacity: sparkle.isExplosionCenter ? 0 : 
+                             sparkle.isLaunchGlow ? 0.7 : 1,
+                    scale: sparkle.isExplosionCenter ? 0 : 
+                           sparkle.isLaunchGlow ? 0.5 : 1
+                  }}
+                  animate={{ 
+                    x: sparkle.targetX, 
+                    y: sparkle.targetY, 
+                    opacity: sparkle.isLaunch ? [1, 0.8, 0.6] : 
+                             sparkle.isLaunchGlow ? [0.7, 0.5, 0] :
+                             sparkle.isTrail ? [1, 0] : 
+                             sparkle.isExplosionCenter ? [1, 0] : 
+                             [1, 1, 0.8, 0],
+                    scale: sparkle.isExplosionCenter ? [0, 4, 0] : 
+                           sparkle.isLaunchGlow ? [0.5, 1.5, 0] :
+                           sparkle.isLaunch ? [1, 0.8, 0.6] : 
+                           sparkle.isSpark ? [1, 0.5, 0] : 
+                           [1, 0.8, 0]
+                  }}
+                  transition={{ 
+                    duration: sparkle.duration,
+                    ease: sparkle.isLaunch || sparkle.isLaunchGlow ? "linear" : 
+                          sparkle.isSpark ? "easeOut" : 
+                          "easeOut",
+                    delay: sparkle.delay || 0,
+                    times: sparkle.isExplosionCenter ? [0, 0.5, 1] : 
+                           sparkle.isLaunch ? [0, 0.7, 1] : 
+                           sparkle.isLaunchGlow ? [0, 0.7, 1] :
+                           sparkle.isTrail ? [0, 1] : 
+                           [0, 0.3, 0.7, 1]
+                  }}
+                  style={{
+                    position: 'absolute',
+                    width: sparkle.size,
+                    height: sparkle.size,
+                    borderRadius: '50%',
+                    backgroundColor: sparkle.color,
+                    boxShadow: `0 0 ${sparkle.isLaunchGlow ? sparkle.size * 4 : sparkle.size * 2}px ${sparkle.color}`,
+                    pointerEvents: 'none',
+                    filter: sparkle.isLaunchGlow ? 'blur(3px)' : 
+                            sparkle.isLaunch ? 'blur(1px)' :
+                            sparkle.isTrail ? 'blur(1px)' : 'none'
+                  }}
+                />
+              ))}
+            </div>
             
             {splashPosition && (
               <div
                 className="splash-effect"
                 style={{
-                  position: 'absolute',
+                  position: 'fixed', // 使用 fixed 定位
                   left: splashPosition.x,
                   top: splashPosition.y,
                 }}
-              />)}
+              />
+            )}
             <div className="couplet-text">
               {animateText && (
                 <div className="couplet-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
