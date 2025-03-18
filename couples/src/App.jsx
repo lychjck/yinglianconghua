@@ -10,6 +10,7 @@ function App() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [error, setError] = useState(null)
   const [currentCouplet, setCurrentCouplet] = useState(null)
+  const [splashPosition, setSplashPosition] = useState(null)
 
   // useEffect(() => {
   //   fetchCouplets()
@@ -74,7 +75,7 @@ function App() {
     fetchRandomCouplet()
   }, [])
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e) => {
     if (!touchStart || !touchEnd) return
 
     const distance = touchStart - touchEnd
@@ -82,8 +83,15 @@ function App() {
 
     if (Math.abs(distance) > minSwipeDistance) {
       setIsAnimating(true)
+      const rect = e.currentTarget.getBoundingClientRect()
+      const x = touchEnd - rect.left
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top
+      setSplashPosition({ x, y })
       fetchRandomCouplet()
-      setTimeout(() => setIsAnimating(false), 300)
+      setTimeout(() => {
+        setIsAnimating(false)
+        setSplashPosition(null)
+      }, 600)
     }
 
     setTouchStart(null)
@@ -115,7 +123,20 @@ function App() {
             onMouseMove={handleMouseMove}
             onMouseUp={handleTouchEnd}
             onMouseLeave={handleTouchEnd}
+            style={{
+              position: 'relative',
+              overflow: 'hidden'
+            }}
           >
+            {splashPosition && (
+              <div
+                className="splash-effect"
+                style={{
+                  position: 'absolute',
+                  left: splashPosition.x,
+                  top: splashPosition.y,
+                }}
+              />)}
             <div className="couplet-text">
               <div className={`second-line ${currentCouplet.second.length <= 3 ? 'short-text' : ''}`}>{currentCouplet.second}</div>
               <div className={`first-line ${currentCouplet.first.length <= 3 ? 'short-text' : ''}`}>{currentCouplet.first}</div>
