@@ -94,11 +94,13 @@ function App() {
         createSparkles(x, y)
       }
       
-      fetchRandomCouplet()
       setTimeout(() => {
-        setIsAnimating(false)
-        setSplashPosition(null)
-      }, 600)
+        fetchRandomCouplet()
+        setTimeout(() => {
+          setIsAnimating(false)
+          setSplashPosition(null)
+        }, 200)
+      }, 1000)
     }
 
     setTouchStart(null)
@@ -121,11 +123,13 @@ function App() {
     // 切换对联
     setIsAnimating(true);
     setSplashPosition({ x, y });
-    fetchRandomCouplet();
     setTimeout(() => {
-      setIsAnimating(false);
-      setSplashPosition(null);
-    }, 600);
+      fetchRandomCouplet();
+      setTimeout(() => {
+        setIsAnimating(false);
+        setSplashPosition(null);
+      }, 200);
+    }, 1000);
   };
 
   // 创建从点击位置发射到顶部的烟花效果
