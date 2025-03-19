@@ -83,24 +83,26 @@ function App() {
     if (Math.abs(distance) > minSwipeDistance) {
       setIsAnimating(true)
       
-      // 使用视口坐标
       const x = e.touches ? e.touches[0].clientX : e.clientX;
       const y = e.touches ? e.touches[0].clientY : e.clientY;
       
       setSplashPosition({ x, y })
       
-      // 只有在启用烟花特效时才创建烟花
       if (enableFireworks) {
         createSparkles(x, y)
+        // 在烟花发射动画结束时切换对联
+        setTimeout(() => {
+          fetchRandomCouplet()
+        }, 800)
+      } else {
+        fetchRandomCouplet()
       }
       
+      // 缩短动画状态重置时间
       setTimeout(() => {
-        fetchRandomCouplet()
-        setTimeout(() => {
-          setIsAnimating(false)
-          setSplashPosition(null)
-        }, 200)
-      }, 1000)
+        setIsAnimating(false)
+        setSplashPosition(null)
+      }, 1500)
     }
 
     setTouchStart(null)
@@ -111,25 +113,27 @@ function App() {
   const handleClick = (e) => {
     if (isAnimating) return;
     
-    // 获取点击位置
     const x = e.clientX;
     const y = e.clientY;
     
-    // 只有在启用烟花特效时才创建烟花
-    if (enableFireworks) {
-      createSparkles(x, y);
-    }
-    
-    // 切换对联
     setIsAnimating(true);
     setSplashPosition({ x, y });
-    setTimeout(() => {
-      fetchRandomCouplet();
+    
+    if (enableFireworks) {
+      createSparkles(x, y);
+      // 在烟花发射动画结束时切换对联
       setTimeout(() => {
-        setIsAnimating(false);
-        setSplashPosition(null);
-      }, 200);
-    }, 1000);
+        fetchRandomCouplet();
+      }, 800);
+    } else {
+      fetchRandomCouplet();
+    }
+    
+    // 缩短动画状态重置时间
+    setTimeout(() => {
+      setIsAnimating(false);
+      setSplashPosition(null);
+    }, 1500);
   };
 
   // 创建从点击位置发射到顶部的烟花效果
@@ -152,7 +156,7 @@ function App() {
     const mainColor = colors[Math.floor(Math.random() * colors.length)];
     
     // 1. 烟花发射轨迹 - 从点击位置发射到顶部
-    const launchDuration = 0.8; // 增加发射持续时间
+    const launchDuration = 0.8; // 缩短发射持续时间
     const launchStartX = x;
     const launchStartY = y;
     const launchEndX = x + (Math.random() * 60 - 30); // 减小随机偏移
@@ -247,7 +251,7 @@ function App() {
     for (let i = 0; i < rayCount1; i++) {
       const angle = (Math.PI * 2 * i) / rayCount1;
       const distance = Math.random() * 150 + 100;
-      const duration = Math.random() * 0.7 + 0.6;
+      const duration = Math.random() * 0.4 + 0.3;
       
       newSparkles.push({
         id: `explosion-ray1-${Date.now()}-${i}`,
@@ -269,7 +273,7 @@ function App() {
     for (let i = 0; i < rayCount2; i++) {
       const angle = (Math.PI * 2 * i) / rayCount2 + (Math.PI / rayCount2);
       const distance = Math.random() * 130 + 80;
-      const duration = Math.random() * 0.6 + 0.5;
+      const duration = Math.random() * 0.3 + 0.4;
       
       newSparkles.push({
         id: `explosion-ray2-${Date.now()}-${i}`,
@@ -290,7 +294,7 @@ function App() {
     for (let i = 0; i < sparkCount; i++) {
       const angle = Math.random() * Math.PI * 2;
       const distance = Math.random() * 200 + 50;
-      const duration = Math.random() * 1.5 + 1;
+      const duration = Math.random() * 0.7 + 0.3;
       const size = Math.random() * 2 + 1;
       const sparkColor = colors[Math.floor(Math.random() * colors.length)];
       
@@ -316,7 +320,7 @@ function App() {
     // 动画结束后清除烟花
     setTimeout(() => {
       setSparkles([]);
-    }, (explosionDelay + 2.5) * 1000); // 给足够的时间完成所有动画
+    }, (explosionDelay + 1.5) * 1000); // 缩短动画总时长
   };
 
   const navItems = ['文库', '创作', '发现', '我的']
