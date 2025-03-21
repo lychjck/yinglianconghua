@@ -20,6 +20,10 @@ function App() {
     const saved = localStorage.getItem('enableFireworks');
     return saved !== null ? JSON.parse(saved) : true; // 默认启用烟花特效
   })
+  const [enableBlur, setEnableBlur] = useState(() => {
+    const saved = localStorage.getItem('enableBlur');
+    return saved !== null ? JSON.parse(saved) : true; // 默认启用模糊效果
+  })
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -33,6 +37,15 @@ function App() {
   useEffect(() => {
     localStorage.setItem('enableFireworks', JSON.stringify(enableFireworks));
   }, [enableFireworks]);
+
+  useEffect(() => {
+    // 更新 CSS 变量
+    document.documentElement.style.setProperty('--blur-amount', enableBlur ? '2px' : '0px');
+    document.documentElement.style.setProperty('--bg-opacity', enableBlur ? '0.1' : '0.05');
+    
+    // 保存到本地存储
+    localStorage.setItem('enableBlur', JSON.stringify(enableBlur));
+  }, [enableBlur]);
 
   const handleTouchStart = (e) => {
     setTouchStart(e.touches ? e.touches[0].clientX : e.clientX)
@@ -363,20 +376,36 @@ function App() {
     setEnableFireworks(prev => !prev);
   };
 
+  // 添加切换模糊效果的函数
+  const toggleBlur = () => {
+    setEnableBlur(prev => !prev);
+  };
+
   return (
     <div className="app">
       {/* 顶部标题栏 */}
       <header className="header">
         <h1>对联雅集</h1>
-        <button 
-          className="toggle-fireworks-btn"
-          onClick={(e) => {
-            e.stopPropagation(); // 阻止事件冒泡，避免触发卡片的点击事件
-            toggleFireworks();
-          }}
-        >
-          {enableFireworks ? '关闭烟花' : '开启烟花'}
-        </button>
+        <div className="header-buttons">
+          <button 
+            className="toggle-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFireworks();
+            }}
+          >
+            {enableFireworks ? '关闭烟花' : '开启烟花'}
+          </button>
+          <button 
+            className="toggle-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleBlur();
+            }}
+          >
+            {enableBlur ? '关闭模糊' : '开启模糊'}
+          </button>
+        </div>
       </header>
 
       {/* 主要内容区域 */}
