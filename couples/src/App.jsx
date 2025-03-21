@@ -3,6 +3,12 @@ import { API_BASE_URL } from './config'
 import './App.css'
 import { motion } from 'framer-motion'
 
+// 使用 Vite 的 import.meta.glob 动态导入所有壁纸
+const wallpaperFiles = import.meta.glob('/public/wallpaper/*.jpg', { eager: true });
+
+// 添加默认壁纸
+const defaultWallpaper = '清恽寿平花卉山水图册其一.jpg';
+
 function App() {
   const [couplets, setCouplets] = useState([])
   const [activeNav, setActiveNav] = useState('文库')
@@ -24,6 +30,12 @@ function App() {
     const saved = localStorage.getItem('enableBlur');
     return saved !== null ? JSON.parse(saved) : true; // 默认启用模糊效果
   })
+  const [wallpapers, setWallpapers] = useState([defaultWallpaper]);
+  const [currentWallpaper, setCurrentWallpaper] = useState(() => {
+    const saved = localStorage.getItem('currentWallpaper');
+    return saved || defaultWallpaper;
+  });
+  const [showWallpaperSelector, setShowWallpaperSelector] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,6 +58,29 @@ function App() {
     // 保存到本地存储
     localStorage.setItem('enableBlur', JSON.stringify(enableBlur));
   }, [enableBlur]);
+
+  useEffect(() => {
+    // 从 wallpaperFiles 中提取壁纸路径
+    const paths = Object.keys(wallpaperFiles).map(path => path.replace('/public/', ''));
+    
+    // 确保默认壁纸在列表中
+    if (!paths.includes(defaultWallpaper)) {
+      paths.unshift(defaultWallpaper);
+    }
+    
+    setWallpapers(paths);
+    
+    // 如果当前壁纸不在列表中，设置为默认壁纸
+    if (!paths.includes(currentWallpaper)) {
+      setCurrentWallpaper(defaultWallpaper);
+    }
+  }, []);
+
+  useEffect(() => {
+    // 更新壁纸 CSS 变量
+    document.documentElement.style.setProperty('--wallpaper', `url('/${currentWallpaper}')`);
+    localStorage.setItem('currentWallpaper', currentWallpaper);
+  }, [currentWallpaper]);
 
   const handleTouchStart = (e) => {
     setTouchStart(e.touches ? e.touches[0].clientX : e.clientX)
@@ -381,6 +416,36 @@ function App() {
     setEnableBlur(prev => !prev);
   };
 
+  // 添加切换壁纸的函数
+  const changeWallpaper = (wallpaper) => {
+    setCurrentWallpaper(wallpaper);
+    setShowWallpaperSelector(false);
+  };
+
+  // 添加切换壁纸选择器显示状态的函数
+  const toggleWallpaperSelector = (e) => {
+    e.stopPropagation();
+    setShowWallpaperSelector(prev => !prev);
+  };
+
+  useEffect(() => {
+    // 点击外部区域关闭壁纸选择器
+    const handleClickOutside = (e) => {
+      if (showWallpaperSelector) {
+        setShowWallpaperSelector(false);
+      }
+    };
+
+    // 只有当壁纸选择器显示时才添加事件监听器
+    if (showWallpaperSelector) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showWallpaperSelector]);
+
   return (
     <div className="app">
       {/* 顶部标题栏 */}
@@ -405,8 +470,32 @@ function App() {
           >
             {enableBlur ? '关闭模糊' : '开启模糊'}
           </button>
+          <button 
+            className="toggle-btn toggle-wallpaper-btn"
+            onClick={toggleWallpaperSelector}
+          >
+            更换壁纸
+          </button>
         </div>
       </header>
+
+      {/* 壁纸选择器 */}
+      {showWallpaperSelector && (
+        <div className="wallpaper-selector" onClick={(e) => e.stopPropagation()}>
+          <h3>选择壁纸</h3>
+          <div className="wallpaper-grid">
+            {wallpapers.map((wallpaper, index) => (
+              <div 
+                key={index}
+                className={`wallpaper-item ${currentWallpaper === wallpaper ? 'active' : ''}`}
+                onClick={() => changeWallpaper(wallpaper)}
+              >
+                <img src={`/${wallpaper}`} alt={`壁纸 ${index + 1}`} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 主要内容区域 */}
       <main className="content">

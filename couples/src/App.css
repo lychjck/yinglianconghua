@@ -6,7 +6,7 @@
 }
 
 .app {
-  background-image: url('/清恽寿平花卉山水图册其一.jpg');
+  background-image: var(--wallpaper);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -533,4 +533,87 @@
 :root {
   --blur-amount: 2px; /* 默认模糊值 */
   --bg-opacity: 0.1; /* 默认背景不透明度 */
+  --wallpaper: url('/清恽寿平花卉山水图册其一.jpg'); /* 默认壁纸 */
+}
+
+/* 壁纸选择器样式 */
+.wallpaper-selector {
+  position: absolute;
+  right: 16px;
+  top: 64px; /* 在标题栏下方 */
+  background-color: rgba(255, 255, 255, var(--bg-opacity));
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border-radius: 4px;
+  padding: 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.wallpaper-selector h3 {
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  font-size: 18px;
+  color: rgba(38, 38, 38, 0.9);
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.wallpaper-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.wallpaper-item {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 宽高比 */
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.wallpaper-item.active {
+  border-color: #FFD700; /* 金色边框表示当前选中的壁纸 */
+}
+
+.wallpaper-item:hover {
+  transform: scale(1.05);
+}
+
+.wallpaper-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 添加壁纸按钮样式 */
+.toggle-wallpaper-btn {
+  background-color: rgba(245, 245, 245, var(--bg-opacity));
+  border: 1px solid rgba(232, 232, 232, var(--bg-opacity));
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  font-size: 14px;
+  color: rgba(51, 51, 51, 0.9);
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+}
+
+.toggle-wallpaper-btn:hover {
+  background-color: rgba(232, 232, 232, 0.9);
+  color: #000;
 }
