@@ -1,9 +1,0 @@
-.split-text-container {
-  display: inline-flex;
-  flex-wrap: wrap;
-}
-
-.split-text-char {
-  display: inline-block;
-  position: relative;
-} 
