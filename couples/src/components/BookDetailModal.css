@@ -1,0 +1,180 @@
+/* 卷轴模态窗口样式 */
+.scroll-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-modal-overlay.opening,
+.scroll-modal-overlay.open {
+  opacity: 1;
+}
+
+.scroll-modal-overlay.closing {
+  opacity: 0;
+}
+
+.scroll-modal-content {
+  position: relative;
+  width: 90%;
+  height: 85%;
+  max-width: 1200px;
+  background-color: rgba(255, 251, 245, 0.95);
+  background-image: url('/paper-texture.jpg');
+  background-size: cover;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transform: translateY(50px);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.scroll-modal-content.opening,
+.scroll-modal-content.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.scroll-modal-content.closing {
+  transform: translateY(50px);
+  opacity: 0;
+}
+
+/* 卷轴内容样式 */
+.scroll-content {
+  padding: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.scroll-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.scroll-title-container {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  color: rgba(38, 38, 38, 0.9);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.scroll-title-container h2 {
+  font-size: 32px;
+  margin: 0 0 0 24px;
+  color: rgba(38, 38, 38, 0.9);
+}
+
+.scroll-title-container h3 {
+  font-size: 28px;
+  margin: 0 0 0 20px;
+  color: rgba(38, 38, 38, 0.8);
+}
+
+.scroll-title-container h4 {
+  font-size: 24px;
+  margin: 0;
+  color: rgba(38, 38, 38, 0.7);
+}
+
+.scroll-decoration {
+  width: 100%;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.top-decoration {
+  background-image: url('/scroll-top.png');
+  margin-bottom: 10px;
+}
+
+.bottom-decoration {
+  background-image: url('/scroll-bottom.png');
+  margin-top: 10px;
+}
+
+.scroll-body {
+  flex: 1;
+  overflow-x: auto;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  color: rgba(38, 38, 38, 0.9);
+  line-height: 2;
+  letter-spacing: 2px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.scroll-body p {
+  margin: 0 0 0 24px;
+  font-size: 18px;
+}
+
+/* 关闭按钮 */
+.scroll-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: rgba(38, 38, 38, 0.9);
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.scroll-close-btn:hover {
+  color: #000;
+  transform: scale(1.1);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .scroll-modal-content {
+    width: 95%;
+    height: 90%;
+  }
+  
+  .scroll-content {
+    padding: 20px;
+  }
+  
+  .scroll-title-container h2 {
+    font-size: 28px;
+  }
+  
+  .scroll-title-container h3 {
+    font-size: 24px;
+  }
+  
+  .scroll-title-container h4 {
+    font-size: 20px;
+  }
+  
+  .scroll-body p {
+    font-size: 16px;
+  }
+} 

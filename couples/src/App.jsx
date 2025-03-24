@@ -7,6 +7,7 @@ import Header from './components/Header'
 import WallpaperSelector from './components/WallpaperSelector'
 import Fireworks from './components/Fireworks'
 import CoupletDisplay from './components/CoupletDisplay'
+import ScrollDetailView from './components/ScrollDetailView'
 import DetailModal from './components/DetailModal'
 
 // 导入工具函数
@@ -39,6 +40,12 @@ function App() {
   const [currentCouplet, setCurrentCouplet] = useState(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [coupletDetail, setCoupletDetail] = useState(null)
+  
+  // 详情显示模式
+  const [detailDisplayMode, setDetailDisplayMode] = useState(() => {
+    const saved = localStorage.getItem('detailDisplayMode');
+    return saved || 'scroll'; // 'scroll' 或 'modal'
+  })
   
   // 特效控制相关状态
   const [enableFireworks, setEnableFireworks] = useState(() => {
@@ -121,6 +128,11 @@ function App() {
     };
   }, [showWallpaperSelector]);
 
+  // 保存详情显示模式到本地存储
+  useEffect(() => {
+    localStorage.setItem('detailDisplayMode', detailDisplayMode);
+  }, [detailDisplayMode]);
+
   // ===== 事件处理函数 =====
   /**
    * 触摸开始事件处理
@@ -157,21 +169,24 @@ function App() {
    */
   const fetchRandomCouplet = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/couplets/random`)
-      if (!response.ok) {
-        throw new Error('获取对联数据失败')
+      // 如果正在显示详情，先关闭详情
+      if (showDetailModal) {
+        setShowDetailModal(false);
+        setCoupletDetail(null);
       }
-      const data = await response.json()
-      setCurrentCouplet(data)
-    } catch (err) {
-      setError(err.message)
-      console.error('Error fetching random couplet:', err)
-    } finally {
-      // 重置动画状态，触发新的动画
-      setAnimateText(false)
-      setTimeout(() => setAnimateText(true), 50)
+      
+      const response = await fetch(`${API_BASE_URL}/api/couplets/random`);
+      if (!response.ok) {
+        throw new Error('获取对联失败');
+      }
+      const data = await response.json();
+      setCurrentCouplet(data);
+      setAnimateText(true);
+    } catch (error) {
+      console.error('获取对联出错:', error);
+      setError('获取对联失败，请稍后再试');
     }
-  }
+  };
 
   /**
    * 触摸结束事件处理
@@ -300,6 +315,14 @@ function App() {
   };
 
   /**
+   * 切换详情显示模式
+   */
+  const toggleDetailDisplayMode = (e) => {
+    if (e) e.stopPropagation();
+    setDetailDisplayMode(prev => prev === 'scroll' ? 'modal' : 'scroll');
+  };
+
+  /**
    * 更改壁纸
    */
   const changeWallpaper = (wallpaper) => {
@@ -308,7 +331,7 @@ function App() {
   };
 
   /**
-   * 关闭详情模态窗口
+   * 关闭详情
    */
   const closeDetailModal = () => {
     setShowDetailModal(false);
@@ -324,6 +347,8 @@ function App() {
         enableBlur={enableBlur}
         toggleBlur={toggleBlur}
         toggleWallpaperSelector={toggleWallpaperSelector}
+        detailDisplayMode={detailDisplayMode}
+        toggleDetailDisplayMode={toggleDetailDisplayMode}
       />
 
       {/* 壁纸选择器 */}
@@ -380,18 +405,29 @@ function App() {
                 getColumnClass={getColumnClass}
               />
             </div>
+            
+            {/* 卷轴详情视图 - 只在卷轴模式下显示 */}
+            {detailDisplayMode === 'scroll' && (
+              <ScrollDetailView
+                show={showDetailModal}
+                detail={coupletDetail}
+                onClose={closeDetailModal}
+              />
+            )}
           </div>
         ) : (
           <div className="loading">加载中...</div>
         )}
       </main>
 
-      {/* 对联详情模态窗口 */}
-      <DetailModal 
-        show={showDetailModal}
-        detail={coupletDetail}
-        onClose={closeDetailModal}
-      />
+      {/* 弹窗模式 - 只在弹窗模式下显示 */}
+      {detailDisplayMode === 'modal' && (
+        <DetailModal 
+          show={showDetailModal}
+          detail={coupletDetail}
+          onClose={closeDetailModal}
+        />
+      )}
     </div>
   )
 }

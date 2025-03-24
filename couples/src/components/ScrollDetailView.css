@@ -1,0 +1,303 @@
+/* 卷轴详情视图样式 */
+.scroll-detail-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--wallpaper);
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  opacity: 0;
+  transform: scaleX(0.1);
+  transform-origin: center;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+  overflow: hidden;
+}
+
+.scroll-detail-view::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 251, 245, 0.3);
+  z-index: -1;
+}
+
+.scroll-detail-view.opening {
+  animation: unfoldScroll 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.scroll-detail-view.open {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.scroll-detail-view.closing {
+  animation: foldScroll 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes unfoldScroll {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.1);
+  }
+  30% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes foldScroll {
+  0% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  70% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(0.1);
+  }
+}
+
+/* 卷轴内容样式 */
+.scroll-detail-content {
+  width: 80%;
+  max-width: 900px;
+  height: 85%;
+  padding: 20px;
+  overflow-y: auto;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  color: rgba(38, 38, 38, 0.9);
+  display: flex;
+  flex-direction: row-reverse;
+  background-color: rgba(255, 251, 245, 0.6);
+  border-radius: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.scroll-detail-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/paper-texture.jpg');
+  background-size: cover;
+  opacity: 0.2;
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.scroll-detail-header {
+  margin-left: 40px;
+  border-right: 1px solid rgba(139, 69, 19, 0.3);
+  padding-right: 20px;
+}
+
+.scroll-detail-header h2 {
+  font-size: 32px;
+  margin: 0 0 0 24px;
+  color: rgba(38, 38, 38, 0.9);
+}
+
+.scroll-detail-header h3 {
+  font-size: 28px;
+  margin: 0 0 0 20px;
+  color: rgba(38, 38, 38, 0.8);
+}
+
+.scroll-detail-header h4 {
+  font-size: 24px;
+  margin: 0;
+  color: rgba(38, 38, 38, 0.7);
+}
+
+.scroll-detail-body {
+  margin-left: 32px;
+  line-height: 2;
+  letter-spacing: 2px;
+}
+
+.scroll-detail-body p {
+  margin: 0 0 0 24px;
+  font-size: 18px;
+}
+
+/* 返回按钮 */
+.scroll-back-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(139, 69, 19, 0.8);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.scroll-back-btn:hover {
+  background-color: rgba(139, 69, 19, 1);
+  transform: translateX(-50%) scale(1.05);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .scroll-detail-content {
+    width: 95%;
+    height: 85%;
+    padding: 15px;
+  }
+  
+  .scroll-detail-header h2 {
+    font-size: 28px;
+  }
+  
+  .scroll-detail-header h3 {
+    font-size: 24px;
+  }
+  
+  .scroll-detail-header h4 {
+    font-size: 20px;
+  }
+  
+  .scroll-detail-body p {
+    font-size: 16px;
+  }
+  
+  .scroll-back-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
+
+/* 保留弹窗模式样式 */
+.modal-detail-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+}
+
+.modal-detail-view.opening,
+.modal-detail-view.open {
+  opacity: 1;
+}
+
+.modal-detail-view.closing {
+  opacity: 0;
+}
+
+.modal-content {
+  background-color: rgba(255, 243, 224, 0.95);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-header {
+  margin-bottom: 16px;
+  border-right: 1px solid rgba(139, 69, 19, 0.3);
+  padding-right: 16px;
+}
+
+.modal-header h2 {
+  font-size: 28px;
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.modal-header h3 {
+  font-size: 24px;
+  margin: 0 0 8px;
+  color: #444;
+}
+
+.modal-header h4 {
+  font-size: 20px;
+  margin: 0;
+  color: #555;
+}
+
+.modal-body {
+  line-height: 1.8;
+  margin-left: 24px;
+}
+
+.modal-body p {
+  margin: 0 0 16px;
+  font-size: 18px;
+  color: #333;
+}
+
+.modal-close-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(139, 69, 19, 0.8);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: rgba(139, 69, 19, 1);
+  transform: translateX(-50%) scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} 

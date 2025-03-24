@@ -22,6 +22,6 @@ If you are developing a production application, we recommend using TypeScript an
 - 烟花特效动画
 - 可自定义背景壁纸
 - 模糊效果切换
-- 对联详情查看
+- 对联详情查看（支持普通模式和书本翻页模式）
 
 ## 项目结构

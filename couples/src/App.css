@@ -724,3 +724,23 @@
     transform: translateY(0);
   }
 }
+
+/* 详情模式切换按钮样式 */
+.toggle-detail-mode-btn {
+  background-color: rgba(245, 245, 245, var(--bg-opacity));
+  border: 1px solid rgba(232, 232, 232, var(--bg-opacity));
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  font-size: 14px;
+  color: rgba(51, 51, 51, 0.9);
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+}
+
+.toggle-detail-mode-btn:hover {
+  background-color: rgba(232, 232, 232, 0.9);
+  color: #000;
+}

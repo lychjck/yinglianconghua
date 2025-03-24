@@ -9,13 +9,17 @@ import React from 'react';
  * @param {boolean} props.enableBlur - 是否启用模糊效果
  * @param {Function} props.toggleBlur - 切换模糊效果的函数
  * @param {Function} props.toggleWallpaperSelector - 切换壁纸选择器显示状态的函数
+ * @param {string} props.detailDisplayMode - 详情展示模式
+ * @param {Function} props.toggleDetailDisplayMode - 切换详情展示模式的函数
  */
 const Header = ({ 
   enableFireworks, 
   toggleFireworks, 
   enableBlur, 
   toggleBlur, 
-  toggleWallpaperSelector 
+  toggleWallpaperSelector,
+  detailDisplayMode,
+  toggleDetailDisplayMode
 }) => {
   return (
     <header className="header">
@@ -44,6 +48,12 @@ const Header = ({
           onClick={toggleWallpaperSelector}
         >
           更换壁纸
+        </button>
+        <button 
+          className="toggle-btn toggle-detail-mode-btn"
+          onClick={toggleDetailDisplayMode}
+        >
+          {detailDisplayMode === 'modal' ? '画卷模式' : '弹窗模式'}
         </button>
       </div>
     </header>
