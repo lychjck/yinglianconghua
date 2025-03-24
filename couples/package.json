@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-wallpapers": "node scripts/generateWallpaperList.js"
+    "generate-wallpapers": "node src/scripts/generateWallpaperList.js"
   },
   "dependencies": {
     "react": "^19.0.0",
