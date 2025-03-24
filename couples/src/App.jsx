@@ -10,9 +10,6 @@ const wallpaperFiles = import.meta.glob('/public/wallpaper/*.jpg', { eager: true
 const defaultWallpaper = '清恽寿平花卉山水图册其一.jpg';
 
 function App() {
-  const [couplets, setCouplets] = useState([])
-  const [activeNav, setActiveNav] = useState('文库')
-  const [currentIndex, setCurrentIndex] = useState(0)
   const [touchStart, setTouchStart] = useState(null)
   const [touchEnd, setTouchEnd] = useState(null)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -24,7 +21,7 @@ function App() {
   const cardRef = useRef(null)
   const [enableFireworks, setEnableFireworks] = useState(() => {
     const saved = localStorage.getItem('enableFireworks');
-    return saved !== null ? JSON.parse(saved) : true; // 默认启用烟花特效
+    return saved !== null ? JSON.parse(saved) : false; // 默认启用烟花特效
   })
   const [enableBlur, setEnableBlur] = useState(() => {
     const saved = localStorage.getItem('enableBlur');
@@ -36,15 +33,6 @@ function App() {
     return saved || defaultWallpaper;
   });
   const [showWallpaperSelector, setShowWallpaperSelector] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!isAnimating && couplets.length > 0) {
-        setCurrentIndex(prevIndex => (prevIndex + 1) % couplets.length)
-      }
-    }, 3000)
-    return () => clearInterval(timer)
-  }, [isAnimating, couplets.length])
 
   useEffect(() => {
     localStorage.setItem('enableFireworks', JSON.stringify(enableFireworks));
@@ -128,6 +116,7 @@ function App() {
     const distance = touchStart - touchEnd
     const minSwipeDistance = 50
 
+    // 只有在用户点击后滑动时才触发切换
     if (Math.abs(distance) > minSwipeDistance) {
       setIsAnimating(true)
       
