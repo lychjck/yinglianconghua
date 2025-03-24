@@ -23,13 +23,23 @@ type Couplet struct {
 	Updated sql.NullTime   `json:"updated_at"`
 }
 
+type YinglianContent struct {
+	ID        int64        `json:"id"`
+	BookName  string       `json:"book_name"`
+	Volume    string       `json:"volume"`
+	Title     string       `json:"title"`
+	Content   string       `json:"content"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+}
+
 var db *sql.DB
 
 func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[CORS] %s %s", r.Method, r.URL.Path)
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		// w.Header().Set("Access-Control-Allow-Origin", "http://10.33.202.222:5173")
+		w.Header().Set("Access-Control-Allow-Origin", "http://10.33.202.222:5173")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
@@ -73,6 +83,7 @@ func main() {
 	// API 路由
 	r.HandleFunc("/api/couplets", getCouplets).Methods("GET")
 	r.HandleFunc("/api/couplets/random", getRandomCouplet).Methods("GET")
+	r.HandleFunc("/api/couplets/content/{ref}", getContentByRef).Methods("GET")
 	// r.HandleFunc("/api/couplets", createCouplet).Methods("POST")
 
 	// 启动服务器
@@ -155,3 +166,29 @@ func getRandomCouplet(w http.ResponseWriter, r *http.Request) {
 // 	w.WriteHeader(http.StatusCreated)
 // 	json.NewEncoder(w).Encode(c)
 // }
+
+
+
+func getContentByRef(w http.ResponseWriter, r *http.Request) {
+	log.Printf("[API] %s %s - Getting content by ref", r.Method, r.URL.Path)
+	vars := mux.Vars(r)
+	ref := vars["ref"]
+
+	var content YinglianContent
+	err := db.QueryRow("SELECT id, book_name, volume, title, content, created_at, updated_at FROM yinglian_content WHERE id = ?", ref).Scan(
+		&content.ID, &content.BookName, &content.Volume, &content.Title, &content.Content, &content.CreatedAt, &content.UpdatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Printf("[Warning] No content found for ref: %s", ref)
+			http.Error(w, "Content not found", http.StatusNotFound)
+			return
+		}
+		log.Printf("[Error] Failed to get content by ref: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	log.Printf("[Success] Retrieved content for ref: %s", ref)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(content)
+}
