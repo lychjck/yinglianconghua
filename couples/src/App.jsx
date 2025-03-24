@@ -33,6 +33,8 @@ function App() {
     return saved || defaultWallpaper;
   });
   const [showWallpaperSelector, setShowWallpaperSelector] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [coupletDetail, setCoupletDetail] = useState(null);
 
   useEffect(() => {
     localStorage.setItem('enableFireworks', JSON.stringify(enableFireworks));
@@ -147,8 +149,28 @@ function App() {
   }
 
   // 处理点击事件，添加烟花效果并切换对联
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     if (isAnimating) return;
+
+    // 检查点击是否在对联文本区域内
+    const isTextAreaClick = e.target.closest('.first-line, .second-line, .vertical-char, .char-container, .char-wrapper');
+
+    // 如果点击在对联文本区域内，显示详情
+    if (isTextAreaClick && currentCouplet && currentCouplet.ref) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/couplets/content/${currentCouplet.ref}`);
+        if (!response.ok) {
+          throw new Error('获取对联详细内容失败');
+        }
+        const data = await response.json();
+        setCoupletDetail(data);
+        setShowDetailModal(true);
+        return;
+      } catch (err) {
+        console.error('Error fetching couplet detail:', err);
+      }
+      return;
+    }
     
     const x = e.clientX;
     const y = e.clientY;
@@ -641,6 +663,31 @@ function App() {
           <div className="loading">加载中...</div>
         )}
       </main>
+
+      {/* 对联详细内容模态窗口 */}
+      {showDetailModal && coupletDetail && (
+        <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowDetailModal(false)}>
+              ×
+            </button>
+            <div className="modal-body">
+              <div className="couplet-detail">
+                <div className="detail-header" style={{ textAlign: "center" }}>
+                  <h2>{coupletDetail.book_name}</h2>
+                  <h3>{coupletDetail.volume}</h3>
+                  <h4>{coupletDetail.title}</h4>
+                </div>
+                <div className="detail-content">
+                  {coupletDetail.content.split('\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

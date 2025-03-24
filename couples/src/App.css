@@ -613,7 +613,114 @@
   -webkit-backdrop-filter: blur(var(--blur-amount));
 }
 
-.toggle-wallpaper-btn:hover {
-  background-color: rgba(232, 232, 232, 0.9);
+/* 模态窗口样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background-color: rgba(255, 243, 224, 0.95);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: rgba(38, 38, 38, 0.9);
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
   color: #000;
+  transform: scale(1.1);
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.couplet-detail {
+  font-family: 'WenYueGuTiFangSong', 'STSong', serif;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  height: 60vh;
+  overflow-x: auto;
+}
+
+.detail-header {
+  margin-left: 24px;
+  text-align: right;
+}
+
+.detail-header h2 {
+  font-size: 24px;
+  color: rgba(38, 38, 38, 0.9);
+  margin: 0 0 16px;
+}
+
+.detail-header h3 {
+  font-size: 20px;
+  color: rgba(38, 38, 38, 0.8);
+  margin: 0 0 12px;
+}
+
+.detail-header h4 {
+  font-size: 18px;
+  color: rgba(38, 38, 38, 0.7);
+  margin: 0;
+}
+
+.detail-content {
+  margin-left: 32px;
+  line-height: 2;
+  letter-spacing: 2px;
+}
+
+.detail-content p {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: rgba(38, 38, 38, 0.9);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
