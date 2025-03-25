@@ -175,13 +175,21 @@ function App() {
         setCoupletDetail(null);
       }
       
+      // 重置动画状态
+      setAnimateText(false);
+      setCurrentCouplet(null);
+      
       const response = await fetch(`${API_BASE_URL}/api/couplets/random`);
       if (!response.ok) {
         throw new Error('获取对联失败');
       }
       const data = await response.json();
+      
+      // 设置新数据并触发动画
       setCurrentCouplet(data);
-      setAnimateText(true);
+      setTimeout(() => {
+        setAnimateText(true);
+      }, 100);
     } catch (error) {
       console.error('获取对联出错:', error);
       setError('获取对联失败，请稍后再试');
