@@ -249,7 +249,8 @@ function App() {
     if (isAnimating) return;
 
     // 检查点击是否在对联文本区域内
-    const isTextAreaClick = e.target.closest('.first-line, .second-line, .vertical-char, .char-container, .char-wrapper');
+    // const isTextAreaClick = e.target.closest('.first-line, .second-line, .vertical-char, .char-container, .char-wrapper');
+    const isTextAreaClick = e.target.closest('.couplet-container');
 
     // 如果点击在对联文本区域内，显示详情
     if (isTextAreaClick && currentCouplet && currentCouplet.ref) {
