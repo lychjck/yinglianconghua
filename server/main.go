@@ -38,8 +38,7 @@ var db *sql.DB
 func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[CORS] %s %s", r.Method, r.URL.Path)
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		w.Header().Set("Access-Control-Allow-Origin", "http://10.33.202.222:5173")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
@@ -166,8 +165,6 @@ func getRandomCouplet(w http.ResponseWriter, r *http.Request) {
 // 	w.WriteHeader(http.StatusCreated)
 // 	json.NewEncoder(w).Encode(c)
 // }
-
-
 
 func getContentByRef(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[API] %s %s - Getting content by ref", r.Method, r.URL.Path)
