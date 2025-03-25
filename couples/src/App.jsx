@@ -55,7 +55,7 @@ function App() {
   
   const [enableBlur, setEnableBlur] = useState(() => {
     const saved = localStorage.getItem('enableBlur');
-    return saved !== null ? JSON.parse(saved) : true; // 默认启用模糊效果
+    return saved !== null ? JSON.parse(saved) : false; // 默认启用模糊效果
   })
   
   // 壁纸相关状态
@@ -78,7 +78,7 @@ function App() {
   // 更新模糊效果 CSS 变量
   useEffect(() => {
     document.documentElement.style.setProperty('--blur-amount', enableBlur ? '2px' : '0px');
-    document.documentElement.style.setProperty('--bg-opacity', enableBlur ? '0.1' : '0.05');
+    document.documentElement.style.setProperty('--bg-opacity', enableBlur ? '0.1' : '0');
     localStorage.setItem('enableBlur', JSON.stringify(enableBlur));
   }, [enableBlur]);
 
