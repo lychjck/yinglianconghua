@@ -8,7 +8,7 @@
   background-image: var(--wallpaper);
   background-size: cover;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Changed from row */
   justify-content: center;
   align-items: center;
   z-index: 10;
@@ -78,12 +78,10 @@
   height: 85%;
   padding: 20px;
   overflow-y: auto;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
   font-family: 'WenYueGuTiFangSong', 'STSong', serif;
   color: rgba(38, 38, 38, 0.9);
-  display: flex;
-  flex-direction: row-reverse;
+  display: flex; /* Make it flex */
+  flex-direction: row-reverse; /* Reverse direction to put header on right */
   background-color: rgba(255, 251, 245, 0.6);
   border-radius: 8px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
@@ -105,20 +103,28 @@
 }
 
 .scroll-detail-header {
-  margin-left: 40px;
-  border-right: 1px solid rgba(139, 69, 19, 0.3);
-  padding-right: 20px;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  white-space: nowrap;
+  border-left: 1px solid rgba(139, 69, 19, 0.3); /* Changed border-right to border-left */
+  padding-left: 20px; /* Changed padding-right to padding-left */
+  margin-left: 40px; /* Changed margin-right to margin-left */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
 }
 
 .scroll-detail-header h2 {
   font-size: 32px;
-  margin: 0 0 0 24px;
+  margin: 24px 0 0 0;
   color: rgba(38, 38, 38, 0.9);
 }
 
 .scroll-detail-header h3 {
   font-size: 28px;
-  margin: 0 0 0 20px;
+  margin: 20px 0 0 0;
   color: rgba(38, 38, 38, 0.8);
 }
 
@@ -129,14 +135,20 @@
 }
 
 .scroll-detail-body {
-  margin-left: 32px;
   line-height: 2;
   letter-spacing: 2px;
+  writing-mode: vertical-rl; /* Make the body text vertical */
+  text-orientation: upright; /* Ensure upright characters */
+  display: flex;        /* Use flexbox for vertical alignment */
+  flex-direction: column; /* Arrange paragraphs vertically */
+  justify-content: flex-start; /* Align paragraphs to the start */
+  align-items: flex-start;    /* Align paragraphs to the start */
 }
 
 .scroll-detail-body p {
-  margin: 0 0 0 24px;
+  margin: 0 24px 24px 0; /* Adjust margins for vertical layout */
   font-size: 18px;
+  /* text-align: justify; */ /* Remove horizontal text alignment */
 }
 
 /* 返回按钮 */
@@ -229,8 +241,6 @@
   overflow-y: auto;
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
   font-family: 'WenYueGuTiFangSong', 'STSong', serif;
   animation: fadeIn 0.3s ease;
 }
@@ -300,4 +310,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-} 
+}

@@ -238,6 +238,7 @@ function App() {
       }, 1500)
     }
 
+    // 重置触摸状态
     setTouchStart(null)
     setTouchEnd(null)
   }
@@ -382,7 +383,6 @@ function App() {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleTouchEnd}
-            onMouseLeave={handleTouchEnd}
             style={{
               position: 'relative',
               overflow: 'hidden',
