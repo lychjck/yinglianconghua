@@ -19,11 +19,9 @@
 .header {
   height: 64px;
   margin-bottom: 0;
-  position: relative;
+  position: absolute;
   z-index: 1;
-  background-color: rgba(255, 251, 245, var(--bg-opacity));
-  backdrop-filter: blur(var(--blur-amount));
-  -webkit-backdrop-filter: blur(var(--blur-amount));
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,25 +49,23 @@
 }
 
 .content {
+  padding-top: 64px;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 251, 245, var(--bg-opacity));
-  backdrop-filter: blur(var(--blur-amount));
-  -webkit-backdrop-filter: blur(var(--blur-amount));
   background-image: none;
   position: relative;
   overflow: hidden;
   padding: 0;
   width: 100%;
   z-index: 0;
-}
-
-.couplet-card {
   background-color: rgba(255, 251, 245, var(--bg-opacity));
   backdrop-filter: blur(var(--blur-amount));
   -webkit-backdrop-filter: blur(var(--blur-amount));
+}
+
+.couplet-card {
   border-radius: 0;
   padding: 24px;
   margin: 0;
