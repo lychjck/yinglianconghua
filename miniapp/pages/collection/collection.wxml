@@ -1,0 +1,35 @@
+<view class="collection-page">
+  <view class="page-header">
+    <view class="page-title">我的收藏</view>
+    <view class="page-count" wx:if="{{favorites.length}}">共 {{favorites.length}} 副</view>
+  </view>
+
+  <!-- 收藏列表 -->
+  <scroll-view scroll-y class="collection-list" wx:if="{{favorites.length}}">
+    <view
+      class="collection-card"
+      wx:for="{{favorites}}"
+      wx:key="id"
+      bindtap="goDetail"
+      bindlongpress="removeFavorite"
+      data-index="{{index}}"
+      data-ref="{{item.ref}}"
+      data-first="{{item.first}}"
+      data-second="{{item.second}}"
+    >
+      <view class="card-couplet">
+        <view class="card-line">{{item.first}}</view>
+        <view class="card-divider"></view>
+        <view class="card-line">{{item.second}}</view>
+      </view>
+      <view class="card-meta">{{item.source.String || '楹联丛话'}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!favorites.length}}">
+    <view class="empty-icon">📖</view>
+    <view class="empty-text">尚无收藏</view>
+    <view class="empty-hint">在首页长按对联即可收藏</view>
+  </view>
+</view>

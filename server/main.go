@@ -105,6 +105,9 @@ func main() {
 	r.HandleFunc("/api/couplets/random", getRandomCouplet).Methods("GET")
 	r.HandleFunc("/api/couplets/content/{ref}", getContentByRef).Methods("GET")
 
+	// 静态文件（字体等）
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	// 启动服务器
 	port := os.Getenv("PORT")
 	if port == "" {

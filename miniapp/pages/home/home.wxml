@@ -1,0 +1,55 @@
+<view class="home-page">
+  <!-- 顶部标题 -->
+  <view class="home-header">
+    <view class="app-title">对联雅集</view>
+    <view class="app-subtitle">楹 联 丛 话</view>
+  </view>
+
+  <!-- 对联展示区 -->
+  <view class="couplet-area" bindtap="fetchRandom">
+    <view class="couplet-display" wx:if="{{couplet}}">
+      <!-- 下联（左） -->
+      <view class="couplet-column">
+        <text
+          wx:for="{{secondChars}}"
+          wx:key="index"
+          class="couplet-char {{animating ? 'char-animate' : ''}}"
+          style="animation-delay: {{0.6 + index * 0.08}}s"
+        >{{item}}</text>
+      </view>
+      <!-- 上联（右） -->
+      <view class="couplet-column">
+        <text
+          wx:for="{{firstChars}}"
+          wx:key="index"
+          class="couplet-char {{animating ? 'char-animate' : ''}}"
+          style="animation-delay: {{index * 0.08}}s"
+        >{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 加载中 -->
+    <view class="loading-text" wx:if="{{loading}}">载入中...</view>
+  </view>
+
+  <!-- 作者/来源 -->
+  <view class="couplet-author" wx:if="{{couplet}}" bindtap="goDetail">
+    <text class="author-text">— {{couplet.source.String || '楹联丛话'}} —</text>
+    <view class="author-hint" wx:if="{{couplet.ref}}">点击查看出处 ›</view>
+  </view>
+
+  <!-- 收藏印章（右上角） -->
+  <view class="seal-btn" wx:if="{{couplet}}" catchtap="saveFavorite">
+    <image 
+      class="seal-img {{isFavorited ? 'seal-active' : ''}}" 
+      src="/images/seal-collect.png"
+      mode="aspectFit"
+    />
+  </view>
+
+  <!-- 操作提示 -->
+  <view class="hint-area">
+    <view class="hint-icon">↻</view>
+    <view class="hint-text">点击空白处换一副</view>
+  </view>
+</view>

@@ -1,0 +1,67 @@
+<view class="detail-page">
+  <!-- 自定义导航栏 -->
+  <view class="detail-header">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <view class="detail-title">出处详情</view>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- 对联预览 -->
+  <view class="couplet-preview" wx:if="{{first}}">
+    <text class="preview-line">{{first}}</text>
+    <view class="preview-divider"></view>
+    <text class="preview-line">{{second}}</text>
+  </view>
+
+  <!-- 卷轴内容 -->
+  <scroll-view scroll-y class="scroll-wrapper" wx:if="{{detail}}">
+    <view class="scroll-container">
+      <view class="scroll-top-rod">
+        <view class="rod-end rod-end-left"></view>
+        <view class="rod-end rod-end-right"></view>
+      </view>
+
+      <view class="scroll-body">
+        <view class="scroll-book-title">{{detail.book_name}}</view>
+        <view class="scroll-volume">{{detail.volume}}</view>
+        <view class="scroll-section-title">{{detail.title}}</view>
+        <view class="scroll-text">
+          <block wx:for="{{paragraphs}}" wx:key="index">
+            <view class="scroll-paragraph">{{item}}</view>
+          </block>
+        </view>
+      </view>
+
+      <view class="scroll-bottom-rod">
+        <view class="rod-end rod-end-left"></view>
+        <view class="rod-end rod-end-right"></view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 加载中 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="loading-text">展卷中...</view>
+  </view>
+
+  <!-- 无内容 -->
+  <view class="empty-detail" wx:if="{{!loading && !detail}}">
+    <view class="empty-text">暂无出处信息</view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="detail-actions">
+    <view class="action-btn" bindtap="toggleFavorite">
+      <view class="action-icon {{isFavorited ? 'favorited' : ''}}">{{isFavorited ? '♥' : '♡'}}</view>
+      <view class="action-label">{{isFavorited ? '已收藏' : '收藏'}}</view>
+    </view>
+    <view class="action-btn" bindtap="shareCouplet">
+      <view class="action-icon">↗</view>
+      <view class="action-label">分享</view>
+    </view>
+    <view class="action-btn" bindtap="copyCouplet">
+      <view class="action-icon">⎘</view>
+      <view class="action-label">复制</view>
+    </view>
+  </view>
+</view>

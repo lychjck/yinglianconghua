@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 type SQLiteRepository struct {
@@ -15,7 +15,7 @@ type SQLiteRepository struct {
 func NewSQLiteRepository(dbPath string) (*SQLiteRepository, error) {
 	log.Printf("[Database] Opening SQLite: %s", dbPath)
 
-	db, err := sql.Open("sqlite3", dbPath+"?_journal_mode=WAL")
+	db, err := sql.Open("sqlite", dbPath+"?_pragma=journal_mode(WAL)")
 	if err != nil {
 		return nil, fmt.Errorf("sqlite open failed: %w", err)
 	}

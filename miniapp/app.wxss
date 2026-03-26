@@ -1,0 +1,13 @@
+/* ===== 全局样式 ===== */
+page {
+  font-family: 'WenYueGuTiFangSong', 'STFangsong', 'FangSong', 'Songti SC', serif;
+  background: linear-gradient(180deg, #f7f2ea 0%, #f0e8d8 50%, #ede3cf 100%);
+  color: #2c2418;
+  min-height: 100vh;
+}
+
+/* 颜色变量通过 class 复用 */
+.color-ink { color: #2c2418; }
+.color-ink-light { color: #5a4e3c; }
+.color-ink-faint { color: #8a7e6c; }
+.color-gold { color: #b8963e; }

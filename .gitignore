@@ -5,3 +5,9 @@
 
 # Go 编译产物
 server/couples
+
+# 系统文件
+.DS_Store
+
+# 临时文件
+server/ubuntu@*

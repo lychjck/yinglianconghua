@@ -1,0 +1,31 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/collection/collection",
+    "pages/detail/detail"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#f5f0e8",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8a7e6c",
+    "selectedColor": "#2c2418",
+    "backgroundColor": "#f5f0e8",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "雅集"
+      },
+      {
+        "pagePath": "pages/collection/collection",
+        "text": "收藏"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

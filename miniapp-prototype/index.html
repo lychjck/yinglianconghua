@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>对联雅集 - 小程序原型</title>
+<style>
+/* ===== 基础重置 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@font-face {
+  font-family: 'FangSong';
+  src: local('STFangsong'), local('FangSong'), local('仿宋');
+}
+
+:root {
+  --color-ink: #2c2418;
+  --color-ink-light: #5a4e3c;
+  --color-ink-faint: #8a7e6c;
+  --color-paper: #f5f0e8;
+  --color-paper-warm: #ede5d5;
+  --color-paper-deep: #e8dcc8;
+  --color-gold: #b8963e;
+  --color-gold-light: #d4b86a;
+  --color-red: #8b2500;
+  --color-red-light: #c44536;
+  --font-classical: 'FangSong', 'STFangsong', 'STSong', 'Songti SC', serif;
+}
+
+body {
+  font-family: var(--font-classical);
+  background: #1a1a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ===== 手机外框 ===== */
+.phone-frame {
+  width: 375px;
+  height: 812px;
+  background: var(--color-paper);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+/* ===== 页面容器 ===== */
+.page {
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.page.active { display: flex; }
+
+/* ========================================
+   首页 - 对联展示
+   ======================================== */
+.home-page {
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(184,150,62,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(139,37,0,0.04) 0%, transparent 60%),
+    linear-gradient(180deg, #f7f2ea 0%, #f0e8d8 50%, #ede3cf 100%);
+}
+
+/* 顶部装饰 */
+.home-header {
+  padding: 60px 0 20px;
+  text-align: center;
+  position: relative;
+}
+
+.home-header::after {
+  content: '';
+  display: block;
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  margin: 16px auto 0;
+}
+
+.app-title {
+  font-size: 22px;
+  color: var(--color-ink);
+  letter-spacing: 8px;
+  font-weight: normal;
+}
+
+.app-subtitle {
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  letter-spacing: 4px;
+  margin-top: 6px;
+}
+
+/* 对联展示区 */
+.couplet-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 40px;
+  position: relative;
+}
+
+/* 水墨装饰背景 */
+.couplet-area::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(184,150,62,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.couplet-display {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.couplet-column {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 28px;
+  color: var(--color-ink);
+  letter-spacing: 10px;
+  line-height: 1.8;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  position: relative;
+}
+
+/* 对联两侧装饰线 */
+.couplet-column::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(184,150,62,0.2), transparent);
+}
+.couplet-column:first-child::before { right: -30px; }
+.couplet-column:last-child::before { left: -30px; }
+
+/* 作者信息 */
+.couplet-author {
+  text-align: center;
+  padding: 0 40px;
+  margin-bottom: 10px;
+}
+
+.author-text {
+  font-size: 13px;
+  color: var(--color-ink-faint);
+  letter-spacing: 2px;
+}
+
+/* 操作提示 */
+.hint-area {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.hint-text {
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  letter-spacing: 2px;
+  opacity: 0.6;
+}
+
+.hint-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(138,126,108,0.3);
+  border-radius: 50%;
+  line-height: 18px;
+  font-size: 10px;
+  color: var(--color-ink-faint);
+  margin-bottom: 4px;
+}
+
+/* 底部导航 */
+.tab-bar {
+  display: flex;
+  height: 80px;
+  background: rgba(245,240,232,0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(184,150,62,0.15);
+  padding-bottom: 20px;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-icon {
+  font-size: 20px;
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+
+.tab-label {
+  font-size: 10px;
+  color: var(--color-ink-faint);
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+
+.tab-item.active .tab-icon { opacity: 1; }
+.tab-item.active .tab-label { color: var(--color-ink); }
+
+/* ========================================
+   收藏页
+   ======================================== */
+.collection-page {
+  background: linear-gradient(180deg, #f7f2ea 0%, #f0e8d8 100%);
+}
+
+.page-header {
+  padding: 60px 24px 20px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 18px;
+  color: var(--color-ink);
+  letter-spacing: 6px;
+  font-weight: normal;
+}
+
+.collection-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 20px;
+}
+
+.collection-card {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(184,150,62,0.12);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.collection-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold-light), transparent);
+}
+
+.card-couplet {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.card-line {
+  font-size: 16px;
+  color: var(--color-ink);
+  letter-spacing: 2px;
+  line-height: 2;
+}
+
+.card-divider {
+  width: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  margin: 8px auto;
+}
+
+.card-meta {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  letter-spacing: 1px;
+}
+
+/* ========================================
+   详情页
+   ======================================== */
+.detail-page {
+  background: linear-gradient(180deg, #f7f2ea 0%, #ede3cf 100%);
+}
+
+.detail-header {
+  padding: 60px 24px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.back-btn {
+  font-size: 14px;
+  color: var(--color-ink-light);
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.detail-title {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-ink);
+  letter-spacing: 4px;
+  font-weight: normal;
+  margin-right: 40px;
+}
+
+/* 卷轴容器 */
+.scroll-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 30px;
+  overflow-y: auto;
+}
+
+.scroll-top-rod {
+  width: 240px;
+  height: 8px;
+  background: linear-gradient(180deg, var(--color-gold), #96782e);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.scroll-top-rod::before,
+.scroll-top-rod::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-gold);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.scroll-top-rod::before { left: -8px; }
+.scroll-top-rod::after { right: -8px; }
+
+.scroll-body {
+  width: 240px;
+  background: 
+    linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 3%, transparent 97%, rgba(0,0,0,0.03) 100%),
+    linear-gradient(180deg, #f5edd8, #f8f0dc, #f5edd8);
+  padding: 30px 24px;
+  border-left: 1px solid rgba(184,150,62,0.2);
+  border-right: 1px solid rgba(184,150,62,0.2);
+  min-height: 400px;
+}
+
+.scroll-bottom-rod {
+  width: 240px;
+  height: 8px;
+  background: linear-gradient(180deg, #96782e, var(--color-gold));
+  border-radius: 4px;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.scroll-bottom-rod::before,
+.scroll-bottom-rod::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-gold);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.scroll-bottom-rod::before { left: -8px; }
+.scroll-bottom-rod::after { right: -8px; }
+
+/* 卷轴内容 */
+.scroll-book-title {
+  text-align: center;
+  font-size: 18px;
+  color: var(--color-ink);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.scroll-volume {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-ink-light);
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.scroll-section-title {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-ink-light);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(184,150,62,0.15);
+}
+
+.scroll-text {
+  font-size: 15px;
+  color: var(--color-ink);
+  line-height: 2.2;
+  letter-spacing: 1px;
+  text-indent: 2em;
+  text-align: justify;
+}
+
+/* 底部操作栏 */
+.detail-actions {
+  display: flex;
+  padding: 16px 40px 36px;
+  gap: 16px;
+  justify-content: center;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.action-icon {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(184,150,62,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: rgba(255,255,255,0.5);
+  transition: all 0.3s;
+}
+
+.action-icon:active {
+  background: rgba(184,150,62,0.1);
+}
+
+.action-label {
+  font-size: 10px;
+  color: var(--color-ink-faint);
+  letter-spacing: 1px;
+}
+
+/* ========================================
+   动画
+   ======================================== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes charReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.couplet-column span {
+  display: inline-block;
+  animation: charReveal 0.4s ease-out both;
+}
+
+/* 逐字延迟 - 上联（右侧） */
+.couplet-column:last-child span:nth-child(1) { animation-delay: 0s; }
+.couplet-column:last-child span:nth-child(2) { animation-delay: 0.08s; }
+.couplet-column:last-child span:nth-child(3) { animation-delay: 0.16s; }
+.couplet-column:last-child span:nth-child(4) { animation-delay: 0.24s; }
+.couplet-column:last-child span:nth-child(5) { animation-delay: 0.32s; }
+.couplet-column:last-child span:nth-child(6) { animation-delay: 0.4s; }
+.couplet-column:last-child span:nth-child(7) { animation-delay: 0.48s; }
+
+/* 逐字延迟 - 下联（左侧） */
+.couplet-column:first-child span:nth-child(1) { animation-delay: 0.6s; }
+.couplet-column:first-child span:nth-child(2) { animation-delay: 0.68s; }
+.couplet-column:first-child span:nth-child(3) { animation-delay: 0.76s; }
+.couplet-column:first-child span:nth-child(4) { animation-delay: 0.84s; }
+.couplet-column:first-child span:nth-child(5) { animation-delay: 0.92s; }
+.couplet-column:first-child span:nth-child(6) { animation-delay: 1.0s; }
+.couplet-column:first-child span:nth-child(7) { animation-delay: 1.08s; }
+
+/* 页面切换 */
+.page { transition: opacity 0.3s ease; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- ===== 首页：对联展示 ===== -->
+  <div class="page home-page active" id="page-home">
+    <div class="home-header">
+      <div class="app-title">对联雅集</div>
+      <div class="app-subtitle">楹 联 丛 话</div>
+    </div>
+
+    <div class="couplet-area" id="couplet-area">
+      <div class="couplet-display">
+        <!-- 下联（左） -->
+        <div class="couplet-column" id="second-line">
+          <span>一</span><span>年</span><span>几</span><span>见</span><span>月</span><span>当</span><span>头</span>
+        </div>
+        <!-- 上联（右） -->
+        <div class="couplet-column" id="first-line">
+          <span>万</span><span>事</span><span>不</span><span>如</span><span>杯</span><span>在</span><span>手</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="couplet-author">
+      <div class="author-text">— 楹联丛话 —</div>
+    </div>
+
+    <div class="hint-area">
+      <div class="hint-icon">↻</div>
+      <div class="hint-text">点击空白处换一副</div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab-item active" onclick="showPage('home')">
+        <div class="tab-icon">🏠</div>
+        <div class="tab-label">雅集</div>
+      </div>
+      <div class="tab-item" onclick="showPage('collection')">
+        <div class="tab-icon">📖</div>
+        <div class="tab-label">收藏</div>
+      </div>
+      <div class="tab-item" onclick="showPage('detail')">
+        <div class="tab-icon">📜</div>
+        <div class="tab-label">出处</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 收藏页 ===== -->
+  <div class="page collection-page" id="page-collection">
+    <div class="page-header">
+      <div class="page-title">我的收藏</div>
+    </div>
+
+    <div class="collection-list">
+      <div class="collection-card">
+        <div class="card-couplet">
+          <div class="card-line">万事不如杯在手</div>
+          <div class="card-divider"></div>
+          <div class="card-line">一年几见月当头</div>
+        </div>
+        <div class="card-meta">楹联丛话</div>
+      </div>
+
+      <div class="collection-card">
+        <div class="card-couplet">
+          <div class="card-line">每临大事有静气</div>
+          <div class="card-divider"></div>
+          <div class="card-line">不信今时无古贤</div>
+        </div>
+        <div class="card-meta">楹联丛话</div>
+      </div>
+
+      <div class="collection-card">
+        <div class="card-couplet">
+          <div class="card-line">好鸟枝头亦朋友</div>
+          <div class="card-divider"></div>
+          <div class="card-line">落花水面皆文章</div>
+        </div>
+        <div class="card-meta">楹联丛话</div>
+      </div>
+
+      <div class="collection-card">
+        <div class="card-couplet">
+          <div class="card-line">事能知足心常惬</div>
+          <div class="card-divider"></div>
+          <div class="card-line">人到无求品自高</div>
+        </div>
+        <div class="card-meta">楹联丛话</div>
+      </div>
+
+      <div class="collection-card">
+        <div class="card-couplet">
+          <div class="card-line">欲知世味须尝胆</div>
+          <div class="card-divider"></div>
+          <div class="card-line">不识人情只看花</div>
+        </div>
+        <div class="card-meta">楹联丛话</div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab-item" onclick="showPage('home')">
+        <div class="tab-icon">🏠</div>
+        <div class="tab-label">雅集</div>
+      </div>
+      <div class="tab-item active" onclick="showPage('collection')">
+        <div class="tab-icon">📖</div>
+        <div class="tab-label">收藏</div>
+      </div>
+      <div class="tab-item" onclick="showPage('detail')">
+        <div class="tab-icon">📜</div>
+        <div class="tab-label">出处</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 详情页（出处） ===== -->
+  <div class="page detail-page" id="page-detail">
+    <div class="detail-header">
+      <div class="back-btn" onclick="showPage('home')">← 返回</div>
+      <div class="detail-title">出处详情</div>
+    </div>
+
+    <div class="scroll-container">
+      <div class="scroll-top-rod"></div>
+      <div class="scroll-body">
+        <div class="scroll-book-title">楹联丛话</div>
+        <div class="scroll-volume">卷之一</div>
+        <div class="scroll-section-title">故事</div>
+        <div class="scroll-text">
+          楹联之兴，肇于五代桃符。孟昶「余庆」「长春」十字，开千古楹联之先。至宋而渐广，至明清而大盛。文人雅士，莫不以联语相尚。或题于楹柱，或书于厅堂，或赠于友朋，蔚为大观。
+        </div>
+      </div>
+      <div class="scroll-bottom-rod"></div>
+    </div>
+
+    <div class="detail-actions">
+      <div class="action-btn">
+        <div class="action-icon">♡</div>
+        <div class="action-label">收藏</div>
+      </div>
+      <div class="action-btn">
+        <div class="action-icon">↗</div>
+        <div class="action-label">分享</div>
+      </div>
+      <div class="action-btn">
+        <div class="action-icon">⎘</div>
+        <div class="action-label">复制</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+}
+
+// 点击空白区域换对联（模拟）
+const couplets = [
+  { first: '万事不如杯在手', second: '一年几见月当头' },
+  { first: '每临大事有静气', second: '不信今时无古贤' },
+  { first: '好鸟枝头亦朋友', second: '落花水面皆文章' },
+  { first: '事能知足心常惬', second: '人到无求品自高' },
+  { first: '欲知世味须尝胆', second: '不识人情只看花' },
+  { first: '海内存知己', second: '天涯若比邻' },
+  { first: '修身岂为名传世', second: '作事惟思利及人' },
+  { first: '世间惟有读书好', second: '天下无如吃饭难' },
+  { first: '石压笋斜出', second: '岩垂花倒开' },
+  { first: '江山澄气象', second: '冰雪净聪明' },
+];
+
+let currentIndex = 0;
+
+document.getElementById('couplet-area').addEventListener('click', function() {
+  currentIndex = (currentIndex + 1) % couplets.length;
+  const c = couplets[currentIndex];
+  
+  const firstLine = document.getElementById('first-line');
+  const secondLine = document.getElementById('second-line');
+  
+  // 先淡出
+  firstLine.style.opacity = '0';
+  secondLine.style.opacity = '0';
+  
+  setTimeout(() => {
+    // 更新文字
+    firstLine.innerHTML = c.first.split('').map((ch, i) => 
+      `<span style="animation-delay:${i * 0.08}s">${ch}</span>`
+    ).join('');
+    secondLine.innerHTML = c.second.split('').map((ch, i) => 
+      `<span style="animation-delay:${0.6 + i * 0.08}s">${ch}</span>`
+    ).join('');
+    
+    // 淡入
+    firstLine.style.opacity = '1';
+    secondLine.style.opacity = '1';
+  }, 200);
+});
+</script>
+
+</body>
+</html>
