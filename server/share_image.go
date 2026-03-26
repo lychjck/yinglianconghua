@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	fontPath = "static/fonts/WenYue_GuTiFangSong_F.otf"
+	fontPath = "static/fonts/WenYue_subset.otf"
 	bgPath   = "static/share-bg.jpg"
 )
 

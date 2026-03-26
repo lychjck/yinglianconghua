@@ -11,3 +11,11 @@ server/couples
 
 # 临时文件
 server/ubuntu@*
+
+# Python 虚拟环境和临时文件
+server/venv/
+server/.python-version
+server/chars.txt
+server/main.py
+server/pyproject.toml
+__pycache__/
