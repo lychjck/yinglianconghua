@@ -11,6 +11,7 @@
     "generate-wallpapers": "node src/scripts/generateWallpaperList.js"
   },
   "dependencies": {
+    "framer-motion": "^12.38.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "split-text": "^1.0.0"

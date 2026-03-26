@@ -65,11 +65,7 @@ func parseFile(filePath string) error {
 			if !existingCouplets[coupletKey] {
 				existingCouplets[coupletKey] = true
 				// 插入数据库
-				_, err := db.Exec(
-					"INSERT INTO couplets (first, second, author, dynasty) VALUES (?, ?, ?, ?)",
-					first, second, "未知", "未知",
-				)
-				if err != nil {
+				if err := repo.InsertCouplet(first, second, "未知", "未知"); err != nil {
 					log.Printf("[Error] Failed to insert couplet: %v", err)
 					continue
 				}

@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -33,7 +32,7 @@ type YinglianContent struct {
 	UpdatedAt sql.NullTime `json:"updated_at"`
 }
 
-var db *sql.DB
+var repo Repository
 
 func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -51,39 +50,60 @@ func enableCORS(next http.Handler) http.Handler {
 	})
 }
 
+// initRepository 根据环境变量创建对应的数据库实现
+func initRepository() (Repository, error) {
+	dbDriver := os.Getenv("DB_DRIVER")
+	if dbDriver == "" {
+		dbDriver = "sqlite" // 默认使用 SQLite
+	}
+
+	switch dbDriver {
+	case "mysql":
+		user := os.Getenv("DB_USER")
+		pass := os.Getenv("DB_PASS")
+		host := os.Getenv("DB_HOST")
+		name := os.Getenv("DB_NAME")
+		if host == "" {
+			host = "localhost:3306"
+		}
+		if name == "" {
+			name = "yinglian"
+		}
+		return NewMySQLRepository(user, pass, host, name)
+	case "sqlite":
+		path := os.Getenv("DB_PATH")
+		if path == "" {
+			path = "yinglian.db"
+		}
+		return NewSQLiteRepository(path)
+	default:
+		log.Fatalf("[Error] Unsupported DB_DRIVER: %s (use 'mysql' or 'sqlite')", dbDriver)
+		return nil, nil
+	}
+}
+
 func main() {
-	// 设置日志格式
 	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
 	log.Println("[Server] Starting application...")
 
 	// 加载环境变量
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("[Error] Failed loading .env file: ", err)
+	if err := godotenv.Load(); err != nil {
+		log.Println("[Config] No .env file found, using system environment")
 	}
-	log.Println("[Config] Environment variables loaded successfully")
 
-	// 连接数据库
-	dbName := "yinglian"
-	dbHost := "localhost"
-	dbUser := "root"
-	dbPass := ""
-	log.Printf("[Database] Connecting to MySQL database %s on %s", dbName, dbHost)
-	db, err = sql.Open("mysql", dbUser+":"+dbPass+"@tcp("+dbHost+")/"+dbName+"?parseTime=true&loc=Local&charset=utf8mb4")
+	// 初始化数据库
+	var err error
+	repo, err = initRepository()
 	if err != nil {
-		log.Fatal("[Error] Database connection failed: ", err)
+		log.Fatal("[Error] Database init failed: ", err)
 	}
-	log.Println("[Database] Connected successfully")
-	defer db.Close()
+	defer repo.Close()
 
 	// 创建路由
 	r := mux.NewRouter()
-
-	// API 路由
 	r.HandleFunc("/api/couplets", getCouplets).Methods("GET")
 	r.HandleFunc("/api/couplets/random", getRandomCouplet).Methods("GET")
 	r.HandleFunc("/api/couplets/content/{ref}", getContentByRef).Methods("GET")
-	// r.HandleFunc("/api/couplets", createCouplet).Methods("POST")
 
 	// 启动服务器
 	port := os.Getenv("PORT")
@@ -91,89 +111,42 @@ func main() {
 		port = "8080"
 	}
 
-	// 添加CORS中间件
 	handler := enableCORS(r)
-
-	log.Printf("Server starting on port %s", port)
+	log.Printf("[Server] Listening on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
 
 func getCouplets(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[API] %s %s - Getting all couplets", r.Method, r.URL.Path)
-	rows, err := db.Query("SELECT id, first, second, author, source, ref, created,updated_at FROM yinglian")
+	couplets, err := repo.GetAllCouplets()
 	if err != nil {
 		log.Printf("[Error] Failed to query couplets: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
-
-	var couplets []Couplet
-	for rows.Next() {
-		var c Couplet
-		err := rows.Scan(&c.ID, &c.First, &c.Second, &c.Author, &c.Source, &c.Ref, &c.Created, &c.Updated)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		couplets = append(couplets, c)
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(couplets)
 }
 
 func getRandomCouplet(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[API] %s %s - Getting random couplet", r.Method, r.URL.Path)
-	var c Couplet
-	err := db.QueryRow("SELECT id, first, second, author, source, ref, created,updated_at from yinglian ORDER BY RAND() LIMIT 1").Scan(
-		&c.ID, &c.First, &c.Second, &c.Author, &c.Source, &c.Ref, &c.Created, &c.Updated)
+	c, err := repo.GetRandomCouplet()
 	if err != nil {
 		log.Printf("[Error] Failed to get random couplet: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	log.Printf("[Success] Retrieved random couplet ID: %d", c.ID)
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(c)
 }
-
-// func createCouplet(w http.ResponseWriter, r *http.Request) {
-// 	log.Printf("[API] %s %s - Creating new couplet", r.Method, r.URL.Path)
-// 	var c Couplet
-// 	if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-// 		log.Printf("[Error] Failed to decode request body: %v", err)
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	log.Printf("[Database] Inserting new couplet: {First: %s, Second: %s, Author: %s, Dynasty: %s}",
-// 		c.First, c.Second, c.Author, c.Dynasty)
-// 	result, err := db.Exec("INSERT INTO couplets (first, second, author, dynasty, created) VALUES (?, ?, ?, ?, NOW())",
-// 		c.First, c.Second, c.Author, c.Dynasty)
-// 	if err != nil {
-// 		log.Printf("[Error] Failed to insert couplet: %v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	id, _ := result.LastInsertId()
-// 	c.ID = int(id)
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusCreated)
-// 	json.NewEncoder(w).Encode(c)
-// }
 
 func getContentByRef(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[API] %s %s - Getting content by ref", r.Method, r.URL.Path)
 	vars := mux.Vars(r)
 	ref := vars["ref"]
 
-	var content YinglianContent
-	err := db.QueryRow("SELECT id, book_name, volume, title, content, created_at, updated_at FROM yinglian_content WHERE id = ?", ref).Scan(
-		&content.ID, &content.BookName, &content.Volume, &content.Title, &content.Content, &content.CreatedAt, &content.UpdatedAt)
+	content, err := repo.GetContentByRef(ref)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Printf("[Warning] No content found for ref: %s", ref)
@@ -185,7 +158,6 @@ func getContentByRef(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("[Success] Retrieved content for ref: %s", ref)
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(content)
 }
