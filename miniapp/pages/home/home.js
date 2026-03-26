@@ -237,5 +237,36 @@ Page({
 
   hidePreview: function () {
     this.setData({ showPreview: false })
+  },
+
+  // 后端生成图片
+  saveServerImage: function () {
+    var couplet = this.data.couplet
+    if (!couplet) return
+
+    this.setData({ showShare: false })
+    wx.showLoading({ title: '生成图片...' })
+
+    var url = app.globalData.apiBaseUrl + '/api/couplets/' + couplet.id + '/share.png'
+
+    wx.downloadFile({
+      url: url,
+      success: function (res) {
+        wx.hideLoading()
+        if (res.statusCode === 200) {
+          // 预览图片，长按可保存
+          wx.previewImage({
+            urls: [res.tempFilePath],
+            current: res.tempFilePath
+          })
+        } else {
+          wx.showToast({ title: '生成失败', icon: 'none' })
+        }
+      },
+      fail: function () {
+        wx.hideLoading()
+        wx.showToast({ title: '网络错误', icon: 'none' })
+      }
+    })
   }
 })

@@ -98,7 +98,7 @@ function drawContent(ctx, bgImg, w, h, textStartY, contentHeight,
 
   // ===== 顶部标题 =====
   ctx.fillStyle = '#b8963e'
-  ctx.font = '14px STFangsong, FangSong, serif'
+  ctx.font = '14px WenYueGuTiFangSong, STFangsong, FangSong, Songti SC, serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText('对 联 雅 集', w / 2, 48)
@@ -107,7 +107,7 @@ function drawContent(ctx, bgImg, w, h, textStartY, contentHeight,
   drawGoldLine(ctx, w, 62, 0.4)
 
   // ===== 对联文字 =====
-  ctx.font = 'bold ' + fontSize + 'px STFangsong, FangSong, Songti SC, serif'
+  ctx.font = 'bold ' + fontSize + 'px WenYueGuTiFangSong, STFangsong, FangSong, Songti SC, serif'
   ctx.fillStyle = '#2c2418'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
@@ -157,7 +157,7 @@ function drawContent(ctx, bgImg, w, h, textStartY, contentHeight,
   // ===== 底部来源 =====
   drawGoldLine(ctx, w, h - 55, 0.4)
   ctx.fillStyle = '#8a7e6c'
-  ctx.font = '12px STFangsong, FangSong, serif'
+  ctx.font = '12px WenYueGuTiFangSong, STFangsong, FangSong, Songti SC, serif'
   ctx.textAlign = 'center'
   ctx.fillText('— ' + source + ' —', w / 2, h - 38)
 

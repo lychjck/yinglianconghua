@@ -70,6 +70,10 @@
         <text class="share-opt-icon">🖼</text>
         <text class="share-opt-label">保存图片</text>
       </view>
+      <view class="share-option" catchtap="saveServerImage">
+        <text class="share-opt-icon">🎨</text>
+        <text class="share-opt-label">生成图片</text>
+      </view>
       <view class="share-option" catchtap="copyCouplet">
         <text class="share-opt-icon">📋</text>
         <text class="share-opt-label">复制文字</text>

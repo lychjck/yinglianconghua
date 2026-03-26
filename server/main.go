@@ -99,11 +99,15 @@ func main() {
 	}
 	defer repo.Close()
 
+	// 检查分享图片所需资源
+	checkShareAssets()
+
 	// 创建路由
 	r := mux.NewRouter()
 	r.HandleFunc("/api/couplets", getCouplets).Methods("GET")
 	r.HandleFunc("/api/couplets/random", getRandomCouplet).Methods("GET")
 	r.HandleFunc("/api/couplets/content/{ref}", getContentByRef).Methods("GET")
+	r.HandleFunc("/api/couplets/{id}/share.png", generateShareImage).Methods("GET")
 
 	// 静态文件（字体等）
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
