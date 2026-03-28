@@ -1,7 +1,7 @@
 <view class="collection-page">
   <view class="page-header">
     <view class="page-title">我的收藏</view>
-    <view class="page-count" wx:if="{{favorites.length}}">共 {{favorites.length}} 副</view>
+    <view class="page-count" wx:if="{{favorites.length}}">共 {{favorites.length}} 副对联</view>
   </view>
 
   <!-- 收藏列表 -->
@@ -11,18 +11,27 @@
       wx:for="{{favorites}}"
       wx:key="id"
       bindtap="goDetail"
-      bindlongpress="removeFavorite"
-      data-index="{{index}}"
-      data-ref="{{item.ref}}"
-      data-first="{{item.first}}"
-      data-second="{{item.second}}"
+      data-id="{{item.id}}"
     >
+      <!-- 删除按钮 -->
+      <view class="card-delete" catchtap="removeFavorite" data-index="{{index}}">×</view>
+
+      <!-- 对联文本 -->
       <view class="card-couplet">
         <view class="card-line">{{item.first}}</view>
         <view class="card-divider"></view>
         <view class="card-line">{{item.second}}</view>
       </view>
-      <view class="card-meta">{{item.source.String || '楹联丛话'}}</view>
+
+      <!-- 作者 + 标签 -->
+      <view class="card-meta-row" wx:if="{{item.author || item.dynasty || item.occasion}}">
+        <text class="card-author" wx:if="{{item.author}}">{{item.author}}</text>
+        <text class="card-tag" wx:if="{{item.dynasty}}">{{item.dynasty}}</text>
+        <text class="card-tag" wx:if="{{item.occasion}}">{{item.occasion}}</text>
+      </view>
+
+      <!-- 出处 -->
+      <view class="card-source" wx:if="{{item.book_name}}">{{item.book_name}}<text wx:if="{{item.volume}}"> · {{item.volume}}</text></view>
     </view>
   </scroll-view>
 
@@ -30,6 +39,6 @@
   <view class="empty-state" wx:if="{{!favorites.length}}">
     <view class="empty-icon">📖</view>
     <view class="empty-text">尚无收藏</view>
-    <view class="empty-hint">在首页长按对联即可收藏</view>
+    <view class="empty-hint">在首页点击印章即可收藏</view>
   </view>
 </view>

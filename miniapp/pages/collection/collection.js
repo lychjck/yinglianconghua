@@ -3,37 +3,34 @@ Page({
     favorites: []
   },
 
-  onShow() {
-    // 每次显示时重新读取收藏（从详情页返回时可能有变化）
-    const favorites = wx.getStorageSync('favorites') || []
-    this.setData({ favorites })
+  onShow: function () {
+    var favorites = wx.getStorageSync('favorites') || []
+    this.setData({ favorites: favorites })
   },
 
-  // 点击跳转详情
-  goDetail(e) {
-    const { ref, first, second } = e.currentTarget.dataset
-    if (!ref) return
-
+  goDetail: function (e) {
+    var item = e.currentTarget.dataset
+    if (!item.id) return
     wx.navigateTo({
-      url: `/pages/detail/detail?ref=${ref}&first=${encodeURIComponent(first)}&second=${encodeURIComponent(second)}`
+      url: '/pages/detail/detail?id=' + item.id
     })
   },
 
-  // 长按删除收藏
-  removeFavorite(e) {
-    const { index } = e.currentTarget.dataset
+  removeFavorite: function (e) {
+    var index = e.currentTarget.dataset.index
+    var that = this
 
     wx.showModal({
       title: '取消收藏',
       content: '确定要移除这副对联吗？',
       confirmText: '移除',
       confirmColor: '#8b2500',
-      success: (res) => {
+      success: function (res) {
         if (res.confirm) {
-          let favorites = this.data.favorites
+          var favorites = that.data.favorites
           favorites.splice(index, 1)
           wx.setStorageSync('favorites', favorites)
-          this.setData({ favorites })
+          that.setData({ favorites: favorites })
           wx.showToast({ title: '已移除', icon: 'none' })
         }
       }

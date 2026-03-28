@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/home/home",
+    "pages/browse/browse",
     "pages/collection/collection",
     "pages/detail/detail"
   ],
@@ -18,6 +19,10 @@
       {
         "pagePath": "pages/home/home",
         "text": "雅集"
+      },
+      {
+        "pagePath": "pages/browse/browse",
+        "text": "浏览"
       },
       {
         "pagePath": "pages/collection/collection",

@@ -30,10 +30,16 @@
     <view class="loading-text" wx:if="{{loading}}">载入中...</view>
   </view>
 
+  <!-- 朝代/场合标签 -->
+  <view class="couplet-tags" wx:if="{{couplet && (dynasty || occasion)}}">
+    <text class="couplet-tag" wx:if="{{dynasty}}">{{dynasty}}</text>
+    <text class="couplet-tag" wx:if="{{occasion}}">{{occasion}}</text>
+  </view>
+
   <!-- 作者/来源 -->
   <view class="couplet-author" wx:if="{{couplet}}" bindtap="goDetail">
-    <text class="author-text">— {{couplet.source.String || '楹联丛话'}} —</text>
-    <view class="author-hint" wx:if="{{couplet.ref}}">点击查看出处 ›</view>
+    <text class="author-text">— {{couplet.author || couplet.book_name || '楹联丛话'}} —</text>
+    <view class="author-hint" wx:if="{{couplet.id}}">点击查看出处 ›</view>
   </view>
 
   <!-- 操作提示 -->

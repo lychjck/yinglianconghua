@@ -6,6 +6,8 @@ Page({
     couplet: null,
     firstChars: [],
     secondChars: [],
+    dynasty: '',
+    occasion: '',
     loading: false,
     animating: false,
     isFavorited: false,
@@ -37,13 +39,15 @@ Page({
 
     return new Promise(function (resolve) {
       wx.request({
-        url: app.globalData.apiBaseUrl + '/api/couplets/random',
+        url: app.globalData.apiBaseUrl + '/api/v2/couplets/random',
         success: function (res) {
           var couplet = res.data
           that.setData({
             couplet: couplet,
             firstChars: couplet.first.split(''),
             secondChars: couplet.second.split(''),
+            dynasty: couplet.dynasty || '',
+            occasion: couplet.occasion || '',
             loading: false
           })
           that.checkFavorited()
@@ -84,8 +88,14 @@ Page({
         first: couplet.first,
         second: couplet.second,
         author: couplet.author,
-        source: couplet.source,
-        ref: couplet.ref,
+        dynasty: couplet.dynasty || '',
+        occasion: couplet.occasion || '',
+        location: couplet.location || '',
+        note: couplet.note || '',
+        paragraph_id: couplet.paragraph_id || null,
+        book_name: couplet.book_name || '',
+        volume: couplet.volume || '',
+        confidence: couplet.confidence || 0,
         savedAt: Date.now()
       })
       wx.setStorageSync('favorites', favorites)
@@ -96,11 +106,9 @@ Page({
 
   goDetail: function () {
     var couplet = this.data.couplet
-    if (!couplet || !couplet.ref) return
+    if (!couplet || !couplet.id) return
     wx.navigateTo({
-      url: '/pages/detail/detail?ref=' + couplet.ref +
-        '&first=' + encodeURIComponent(couplet.first) +
-        '&second=' + encodeURIComponent(couplet.second)
+      url: '/pages/detail/detail?id=' + couplet.id
     })
   },
 

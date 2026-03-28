@@ -2,42 +2,70 @@
   <!-- 自定义导航栏 -->
   <view class="detail-header">
     <view class="back-btn" bindtap="goBack">← 返回</view>
-    <view class="detail-title">出处详情</view>
+    <view class="detail-title">对联详情</view>
     <view class="header-placeholder"></view>
   </view>
 
   <!-- 对联预览 -->
-  <view class="couplet-preview" wx:if="{{first}}">
-    <text class="preview-line">{{first}}</text>
+  <view class="couplet-preview" wx:if="{{couplet}}">
+    <text class="preview-line">{{couplet.first}}</text>
     <view class="preview-divider"></view>
-    <text class="preview-line">{{second}}</text>
+    <text class="preview-line">{{couplet.second}}</text>
   </view>
 
-  <!-- 卷轴内容 -->
-  <scroll-view scroll-y class="scroll-wrapper" wx:if="{{detail}}">
+  <!-- 元信息卡片 -->
+  <view class="couplet-meta-card" wx:if="{{couplet}}">
+    <view class="meta-row" wx:if="{{couplet.author}}">
+      <text class="meta-label">作者</text>
+      <text class="meta-value">{{couplet.author}}</text>
+    </view>
+    <view class="meta-row" wx:if="{{couplet.dynasty}}">
+      <text class="meta-label">朝代</text>
+      <view class="meta-value"><text class="meta-tag">{{couplet.dynasty}}</text></view>
+    </view>
+    <view class="meta-row" wx:if="{{couplet.occasion}}">
+      <text class="meta-label">场合</text>
+      <view class="meta-value"><text class="meta-tag">{{couplet.occasion}}</text></view>
+    </view>
+    <view class="meta-row" wx:if="{{couplet.book_name}}">
+      <text class="meta-label">出处</text>
+      <text class="meta-value">{{couplet.book_name}}{{couplet.volume ? ' · ' + couplet.volume : ''}}</text>
+    </view>
+    <view class="meta-row" wx:if="{{couplet.location}}">
+      <text class="meta-label">地点</text>
+      <text class="meta-value">{{couplet.location}}</text>
+    </view>
+  </view>
+
+  <!-- 注释/典故 -->
+  <view class="note-section" wx:if="{{couplet.note}}">
+    <view class="note-label">典故</view>
+    <view class="note-text">{{couplet.note}}</view>
+  </view>
+
+  <!-- 卷轴原文 -->
+  <view class="scroll-wrapper" wx:if="{{paragraph}}">
     <view class="scroll-container">
       <view class="scroll-top-rod">
         <view class="rod-end rod-end-left"></view>
         <view class="rod-end rod-end-right"></view>
       </view>
-
       <view class="scroll-body">
-        <view class="scroll-book-title">{{detail.book_name}}</view>
-        <view class="scroll-volume">{{detail.volume}}</view>
-        <view class="scroll-section-title">{{detail.title}}</view>
+        <view class="scroll-book-title">{{paragraph.book_name}}</view>
+        <view class="scroll-volume">{{paragraph.volume}}</view>
+        <view class="scroll-section-title">{{paragraph.title}}</view>
         <view class="scroll-text">
           <block wx:for="{{paragraphs}}" wx:key="index">
             <view class="scroll-paragraph">{{item}}</view>
           </block>
         </view>
       </view>
-
       <view class="scroll-bottom-rod">
         <view class="rod-end rod-end-left"></view>
         <view class="rod-end rod-end-right"></view>
       </view>
     </view>
-  </scroll-view>
+  </view>
 
   <!-- 加载中 -->
   <view class="loading-state" wx:if="{{loading}}">
@@ -45,12 +73,12 @@
   </view>
 
   <!-- 无内容 -->
-  <view class="empty-detail" wx:if="{{!loading && !detail}}">
-    <view class="empty-text">暂无出处信息</view>
+  <view class="empty-detail" wx:if="{{!loading && !couplet}}">
+    <view class="empty-text">暂无对联信息</view>
   </view>
 
   <!-- 底部操作 -->
-  <view class="detail-actions">
+  <view class="detail-actions" wx:if="{{couplet}}">
     <view class="action-btn" bindtap="toggleFavorite">
       <view class="action-icon {{isFavorited ? 'favorited' : ''}}">{{isFavorited ? '♥' : '♡'}}</view>
       <view class="action-label">{{isFavorited ? '已收藏' : '收藏'}}</view>

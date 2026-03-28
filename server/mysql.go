@@ -73,3 +73,33 @@ func (r *MySQLRepository) InsertCouplet(first, second, author, dynasty string) e
 func (r *MySQLRepository) Close() error {
 	return r.db.Close()
 }
+
+// --- v2 接口（MySQL 暂未实现，返回 not supported） ---
+
+func (r *MySQLRepository) GetRandomCoupletV2() (*CoupletV2, error) {
+	return nil, fmt.Errorf("v2 API not supported on MySQL yet")
+}
+
+func (r *MySQLRepository) GetCoupletByID(id int) (*CoupletV2, error) {
+	return nil, fmt.Errorf("v2 API not supported on MySQL yet")
+}
+
+func (r *MySQLRepository) ListCouplets(filter CoupletFilter) ([]CoupletV2, int, error) {
+	return nil, 0, fmt.Errorf("v2 API not supported on MySQL yet")
+}
+
+func (r *MySQLRepository) GetParagraphByID(id int) (*Paragraph, error) {
+	return nil, fmt.Errorf("v2 API not supported on MySQL yet")
+}
+
+func (r *MySQLRepository) GetDistinctDynasties() ([]string, error) {
+	return nil, fmt.Errorf("v2 API not supported on MySQL yet")
+}
+
+func (r *MySQLRepository) GetDistinctOccasions() ([]string, error) {
+	return nil, fmt.Errorf("v2 API not supported on MySQL yet")
+}
+
+func (r *MySQLRepository) GetDistinctBooks() ([]string, error) {
+	return nil, fmt.Errorf("v2 API not supported on MySQL yet")
+}

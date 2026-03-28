@@ -83,6 +83,24 @@
   letter-spacing: 4rpx;
 }
 
+/* ===== 朝代/场合标签 ===== */
+.couplet-tags {
+  display: flex;
+  justify-content: center;
+  gap: 16rpx;
+  margin-top: 8rpx;
+  margin-bottom: 24rpx;
+}
+
+.couplet-tag {
+  font-size: 20rpx;
+  color: #b8963e;
+  border: 1rpx solid rgba(184,150,62,0.4);
+  border-radius: 20rpx;
+  padding: 4rpx 20rpx;
+  letter-spacing: 2rpx;
+}
+
 .couplet-author {
   text-align: center;
   padding: 0 80rpx 20rpx;

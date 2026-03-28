@@ -109,6 +109,13 @@ func main() {
 	r.HandleFunc("/api/couplets/content/{ref}", getContentByRef).Methods("GET")
 	r.HandleFunc("/api/couplets/{id}/share.png", generateShareImage).Methods("GET")
 
+	// v2 API 路由（LLM 提取数据）
+	r.HandleFunc("/api/v2/couplets/random", getRandomCoupletV2).Methods("GET")
+	r.HandleFunc("/api/v2/couplets/{id}", getCoupletByID).Methods("GET")
+	r.HandleFunc("/api/v2/couplets", listCouplets).Methods("GET")
+	r.HandleFunc("/api/v2/paragraphs/{id}", getParagraphByID).Methods("GET")
+	r.HandleFunc("/api/v2/filters", getFilterOptions).Methods("GET")
+
 	// 静态文件（字体等）
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 

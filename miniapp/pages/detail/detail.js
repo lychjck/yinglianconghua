@@ -1,84 +1,93 @@
-const app = getApp()
+var app = getApp()
 
 Page({
   data: {
-    ref: null,
-    first: '',
-    second: '',
-    detail: null,
+    id: null,
+    couplet: null,
+    paragraph: null,
     paragraphs: [],
     loading: false,
     isFavorited: false
   },
 
-  onLoad(options) {
-    const { ref, first, second } = options
-    this.setData({
-      ref,
-      first: decodeURIComponent(first || ''),
-      second: decodeURIComponent(second || '')
-    })
-
-    this.checkFavorited()
-
-    if (ref) {
-      this.fetchDetail(ref)
+  onLoad: function (options) {
+    var id = options.id
+    if (id) {
+      this.setData({ id: parseInt(id) })
+      this.fetchDetail(id)
     }
   },
 
-  // 获取出处详情
-  fetchDetail(ref) {
+  onShow: function () {
+    this.checkFavorited()
+  },
+
+  fetchDetail: function (id) {
+    var that = this
     this.setData({ loading: true })
 
     wx.request({
-      url: `${app.globalData.apiBaseUrl}/api/couplets/content/${ref}`,
-      success: (res) => {
+      url: app.globalData.apiBaseUrl + '/api/v2/couplets/' + id,
+      success: function (res) {
         if (res.statusCode === 200) {
-          const detail = res.data
-          this.setData({
-            detail,
-            paragraphs: detail.content ? detail.content.split('\n').filter(p => p.trim()) : [],
+          var data = res.data
+          var couplet = data.couplet || data
+          var paragraph = data.paragraph || null
+          var paragraphs = []
+          if (paragraph && paragraph.content) {
+            paragraphs = paragraph.content.split('\n').filter(function (p) { return p.trim() })
+          }
+          that.setData({
+            couplet: couplet,
+            paragraph: paragraph,
+            paragraphs: paragraphs,
             loading: false
           })
+          that.checkFavorited()
         } else {
-          this.setData({ loading: false })
+          that.setData({ loading: false })
+          wx.showToast({ title: '对联不存在', icon: 'none' })
         }
       },
-      fail: () => {
+      fail: function () {
+        that.setData({ loading: false })
         wx.showToast({ title: '获取详情失败', icon: 'none' })
-        this.setData({ loading: false })
       }
     })
   },
 
-  // 检查是否已收藏
-  checkFavorited() {
-    const favorites = wx.getStorageSync('favorites') || []
-    const { first, second } = this.data
-    const isFavorited = favorites.some(f => f.first === first && f.second === second)
-    this.setData({ isFavorited })
+  checkFavorited: function () {
+    var couplet = this.data.couplet
+    if (!couplet) return
+    var favorites = wx.getStorageSync('favorites') || []
+    var isFavorited = favorites.some(function (f) { return f.id === couplet.id })
+    this.setData({ isFavorited: isFavorited })
   },
 
-  // 切换收藏
-  toggleFavorite() {
-    let favorites = wx.getStorageSync('favorites') || []
-    const { first, second, ref } = this.data
+  toggleFavorite: function () {
+    var couplet = this.data.couplet
+    if (!couplet) return
+    var favorites = wx.getStorageSync('favorites') || []
 
     if (this.data.isFavorited) {
-      // 取消收藏
-      favorites = favorites.filter(f => !(f.first === first && f.second === second))
+      favorites = favorites.filter(function (f) { return f.id !== couplet.id })
       wx.setStorageSync('favorites', favorites)
       this.setData({ isFavorited: false })
       wx.showToast({ title: '已取消收藏', icon: 'none' })
     } else {
-      // 添加收藏
       favorites.unshift({
-        id: Date.now(),
-        first,
-        second,
-        author: { String: '', Valid: false },
-        source: { String: this.data.detail ? this.data.detail.book_name : '', Valid: true },
-        ref: parseInt(ref) || 0,
+        id: couplet.id,
+        first: couplet.first,
+        second: couplet.second,
+        author: couplet.author || '',
+        dynasty: couplet.dynasty || '',
+        occasion: couplet.occasion || '',
+        location: couplet.location || '',
+        note: couplet.note || '',
+        paragraph_id: couplet.paragraph_id || null,
+        book_name: couplet.book_name || '',
+        volume: couplet.volume || '',
+        confidence: couplet.confidence || 0,
         savedAt: Date.now()
       })
       wx.setStorageSync('favorites', favorites)
@@ -87,44 +96,42 @@ Page({
     }
   },
 
-  // 复制对联
-  copyCouplet() {
-    const { first, second } = this.data
+  copyCouplet: function () {
+    var couplet = this.data.couplet
+    if (!couplet) return
     wx.setClipboardData({
-      data: `${first}\n${second}`,
-      success: () => {
+      data: couplet.first + '\n' + couplet.second,
+      success: function () {
         wx.showToast({ title: '已复制', icon: 'success' })
       }
     })
   },
 
-  // 分享
-  shareCouplet() {
-    // 触发小程序原生分享
+  shareCouplet: function () {
     wx.showShareMenu({
       withShareTicket: true,
       menus: ['shareAppMessage', 'shareTimeline']
     })
   },
 
-  // 分享给朋友
-  onShareAppMessage() {
-    const { first, second } = this.data
+  onShareAppMessage: function () {
+    var couplet = this.data.couplet
+    if (!couplet) return
     return {
-      title: `${first} / ${second}`,
-      path: `/pages/home/home`
+      title: couplet.first + ' / ' + couplet.second,
+      path: '/pages/detail/detail?id=' + couplet.id
     }
   },
 
-  // 分享到朋友圈
-  onShareTimeline() {
-    const { first, second } = this.data
+  onShareTimeline: function () {
+    var couplet = this.data.couplet
+    if (!couplet) return
     return {
-      title: `${first} / ${second}`
+      title: couplet.first + ' / ' + couplet.second
     }
   },
 
-  goBack() {
+  goBack: function () {
     wx.navigateBack()
   }
 })

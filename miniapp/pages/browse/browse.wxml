@@ -1,0 +1,71 @@
+<view class="browse-page">
+  <!-- 页面标题 -->
+  <view class="browse-header">
+    <view class="browse-title">浏览楹联</view>
+    <view class="browse-subtitle">按朝代、场合、书籍筛选</view>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <picker class="filter-group" mode="selector" range="{{dynasties}}" value="{{dynastyIndex}}" bindchange="onDynastyChange">
+      <view class="filter-select">{{dynasties[dynastyIndex] || '全部朝代'}}</view>
+    </picker>
+    <picker class="filter-group" mode="selector" range="{{occasions}}" value="{{occasionIndex}}" bindchange="onOccasionChange">
+      <view class="filter-select">{{occasions[occasionIndex] || '全部场合'}}</view>
+    </picker>
+    <picker class="filter-group" mode="selector" range="{{books}}" value="{{bookIndex}}" bindchange="onBookChange">
+      <view class="filter-select">{{books[bookIndex] || '全部书籍'}}</view>
+    </picker>
+  </view>
+
+  <!-- 结果统计 -->
+  <view class="result-stats">
+    <text>共 <text class="result-count">{{total}}</text> 副</text>
+    <text>{{dynastyIndex > 0 || occasionIndex > 0 || bookIndex > 0 ? (dynastyIndex > 0 ? dynasties[dynastyIndex] : '') + (dynastyIndex > 0 && occasionIndex > 0 ? ' · ' : '') + (occasionIndex > 0 ? occasions[occasionIndex] : '') + ((dynastyIndex > 0 || occasionIndex > 0) && bookIndex > 0 ? ' · ' : '') + (bookIndex > 0 ? books[bookIndex] : '') : '全部'}}</text>
+  </view>
+
+  <!-- 对联列表 -->
+  <view class="browse-list">
+    <view
+      class="browse-card"
+      wx:for="{{couplets}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="goDetail"
+    >
+      <view class="browse-card-couplet">
+        <text class="browse-card-line">{{item.first}}</text>
+        <view class="browse-card-divider"></view>
+        <text class="browse-card-line">{{item.second}}</text>
+      </view>
+      <view class="browse-card-meta">
+        <text class="browse-card-author" wx:if="{{item.author}}">{{item.author}}</text>
+        <view class="browse-card-tags">
+          <text class="browse-card-tag" wx:if="{{item.dynasty}}">{{item.dynasty}}</text>
+          <text class="browse-card-tag" wx:if="{{item.occasion}}">{{item.occasion}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 / 已加载全部 -->
+  <view class="load-more" wx:if="{{couplets.length > 0}}">
+    <block wx:if="{{!allLoaded}}">
+      <text class="load-more-dot dot-1">·</text>
+      <text class="load-more-dot dot-2">·</text>
+      <text class="load-more-dot dot-3">·</text>
+      <text> 上拉加载更多</text>
+    </block>
+    <text wx:else>已加载全部</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && couplets.length === 0 && total === 0}}">
+    <text class="empty-text">暂无匹配的对联</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-indicator" wx:if="{{loading && couplets.length === 0}}">
+    <text class="loading-text">载入中...</text>
+  </view>
+</view>

@@ -1,8 +1,13 @@
+page {
+  overflow-x: hidden;
+}
+
 .detail-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(180deg, #f7f2ea 0%, #ede3cf 100%);
+  overflow-x: hidden;
 }
 
 /* 导航栏 */
@@ -42,6 +47,7 @@
   color: #2c2418;
   letter-spacing: 4rpx;
   line-height: 2;
+  display: block;
 }
 
 .preview-divider {
@@ -51,22 +57,91 @@
   margin: 8rpx auto;
 }
 
+/* 元信息卡片 */
+.couplet-meta-card {
+  margin: 0 48rpx 32rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1rpx solid rgba(184, 150, 62, 0.15);
+  border-radius: 24rpx;
+  padding: 32rpx 40rpx;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.meta-row + .meta-row {
+  border-top: 1rpx solid rgba(184, 150, 62, 0.1);
+}
+
+.meta-label {
+  font-size: 22rpx;
+  color: #8a7e6c;
+  letter-spacing: 2rpx;
+  width: 96rpx;
+  flex-shrink: 0;
+}
+
+.meta-value {
+  font-size: 26rpx;
+  color: #2c2418;
+  letter-spacing: 2rpx;
+  flex: 1;
+}
+
+.meta-tag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #b8963e;
+  border: 1rpx solid rgba(184, 150, 62, 0.4);
+  border-radius: 16rpx;
+  padding: 2rpx 16rpx;
+  letter-spacing: 2rpx;
+}
+
+/* 注释/典故 */
+.note-section {
+  margin: 0 48rpx 32rpx;
+  background: rgba(184, 150, 62, 0.06);
+  border-left: 4rpx solid #d4b86a;
+  border-radius: 0 16rpx 16rpx 0;
+  padding: 24rpx 32rpx;
+}
+
+.note-label {
+  font-size: 20rpx;
+  color: #b8963e;
+  letter-spacing: 4rpx;
+  margin-bottom: 8rpx;
+}
+
+.note-text {
+  font-size: 26rpx;
+  color: #5a4e3c;
+  line-height: 1.8;
+  letter-spacing: 2rpx;
+}
+
 /* 卷轴 */
 .scroll-wrapper {
   flex: 1;
-  padding: 0 60rpx;
+  text-align: center;
 }
 
 .scroll-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: inline-block;
+  text-align: left;
   padding-bottom: 40rpx;
+  width: 80%;
+  max-width: 520rpx;
+  box-sizing: border-box;
 }
 
 .scroll-top-rod,
 .scroll-bottom-rod {
-  width: 480rpx;
+  width: 100%;
   height: 16rpx;
   background: linear-gradient(180deg, #b8963e, #96782e);
   border-radius: 8rpx;
@@ -85,21 +160,24 @@
   height: 32rpx;
   background: #b8963e;
   border-radius: 50%;
-  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.15);
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
 }
 
 .rod-end-left { left: -16rpx; }
 .rod-end-right { right: -16rpx; }
 
 .scroll-body {
-  width: 480rpx;
+  width: 100%;
+  box-sizing: border-box;
   background:
-    linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 3%, transparent 97%, rgba(0,0,0,0.03) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 0%, transparent 3%, transparent 97%, rgba(0, 0, 0, 0.03) 100%),
     linear-gradient(180deg, #f5edd8, #f8f0dc, #f5edd8);
   padding: 48rpx 40rpx;
-  border-left: 1rpx solid rgba(184,150,62,0.2);
-  border-right: 1rpx solid rgba(184,150,62,0.2);
-  min-height: 500rpx;
+  border-left: 1rpx solid rgba(184, 150, 62, 0.2);
+  border-right: 1rpx solid rgba(184, 150, 62, 0.2);
+  min-height: 320rpx;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .scroll-book-title {
@@ -125,7 +203,7 @@
   letter-spacing: 4rpx;
   margin-bottom: 40rpx;
   padding-bottom: 24rpx;
-  border-bottom: 1rpx solid rgba(184,150,62,0.15);
+  border-bottom: 1rpx solid rgba(184, 150, 62, 0.15);
 }
 
 .scroll-paragraph {
@@ -172,19 +250,19 @@
 .action-icon {
   width: 88rpx;
   height: 88rpx;
-  border: 1rpx solid rgba(184,150,62,0.3);
+  border: 1rpx solid rgba(184, 150, 62, 0.3);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 36rpx;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
   color: #5a4e3c;
 }
 
 .action-icon.favorited {
   color: #c44536;
-  border-color: rgba(196,69,54,0.3);
+  border-color: rgba(196, 69, 54, 0.3);
 }
 
 .action-label {
