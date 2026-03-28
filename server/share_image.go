@@ -72,31 +72,45 @@ func generateShareImage(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("[Share] Fonts loaded successfully")
 
-	// 查数据库
-	var c Couplet
-	couplets, err := repo.GetAllCouplets()
-	if err != nil {
-		http.Error(w, "database error", http.StatusInternalServerError)
-		return
-	}
-	found := false
-	for _, cp := range couplets {
-		if fmt.Sprintf("%d", cp.ID) == id {
-			c = cp
-			found = true
-			break
-		}
-	}
-	if !found {
-		http.Error(w, "couplet not found", http.StatusNotFound)
-		return
-	}
+	// 查数据库 — 优先从 v2 新表查，回退到旧表
+	idInt := 0
+	fmt.Sscanf(id, "%d", &idInt)
 
-	first := c.First
-	second := c.Second
-	source := "楹联丛话"
-	if c.Source.Valid && c.Source.String != "" {
-		source = c.Source.String
+	var first, second, source string
+	cv2, err := repo.GetCoupletByID(idInt)
+	if err == nil && cv2 != nil {
+		first = cv2.First
+		second = cv2.Second
+		source = "楹联丛话"
+		if cv2.BookName != "" {
+			source = cv2.BookName
+		}
+	} else {
+		// 回退：从旧表查
+		var c Couplet
+		couplets, err := repo.GetAllCouplets()
+		if err != nil {
+			http.Error(w, "database error", http.StatusInternalServerError)
+			return
+		}
+		found := false
+		for _, cp := range couplets {
+			if fmt.Sprintf("%d", cp.ID) == id {
+				c = cp
+				found = true
+				break
+			}
+		}
+		if !found {
+			http.Error(w, "couplet not found", http.StatusNotFound)
+			return
+		}
+		first = c.First
+		second = c.Second
+		source = "楹联丛话"
+		if c.Source.Valid && c.Source.String != "" {
+			source = c.Source.String
+		}
 	}
 
 	// 分列
