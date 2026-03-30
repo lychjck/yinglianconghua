@@ -5,6 +5,21 @@ Page({
 
   onShow: function () {
     var favorites = wx.getStorageSync('favorites') || []
+    // 兼容旧版收藏数据：author/source 可能是 sql.NullString 对象
+    favorites = favorites.map(function (item) {
+      var fixed = Object.assign({}, item)
+      if (fixed.author && typeof fixed.author === 'object') {
+        fixed.author = fixed.author.String || ''
+      }
+      if (fixed.source && typeof fixed.source === 'object') {
+        fixed.source = fixed.source.String || ''
+      }
+      // 旧版数据没有 book_name，尝试从 source 补充
+      if (!fixed.book_name && fixed.source) {
+        fixed.book_name = typeof fixed.source === 'string' ? fixed.source : ''
+      }
+      return fixed
+    })
     this.setData({ favorites: favorites })
   },
 

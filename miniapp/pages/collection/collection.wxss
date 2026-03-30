@@ -26,7 +26,8 @@
 /* 列表 */
 .collection-list {
   flex: 1;
-  padding: 0 32rpx 160rpx;
+  padding: 0 40rpx 160rpx;
+  box-sizing: border-box;
 }
 
 .collection-card {
@@ -37,6 +38,7 @@
   margin-bottom: 24rpx;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .collection-card::before {
