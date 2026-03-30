@@ -19,3 +19,5 @@ server/chars.txt
 server/main.py
 server/pyproject.toml
 __pycache__/
+
+miniapp/node_modules
