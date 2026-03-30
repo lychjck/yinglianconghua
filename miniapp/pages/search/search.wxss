@@ -1,4 +1,4 @@
-.browse-page {
+.search-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -8,38 +8,39 @@
     linear-gradient(180deg, #f7f2ea 0%, #f0e8d8 50%, #ede3cf 100%);
 }
 
-/* ===== 页面标题 ===== */
-.browse-header {
-  padding: 100rpx 0 32rpx;
-  text-align: center;
+/* ===== 搜索栏 ===== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  padding: 100rpx 32rpx 24rpx;
+  gap: 20rpx;
 }
 
-.browse-title {
-  font-size: 36rpx;
-  color: #2c2418;
-  letter-spacing: 12rpx;
-}
-
-.browse-subtitle {
-  font-size: 22rpx;
-  color: #8a7e6c;
-  letter-spacing: 4rpx;
-  margin-top: 8rpx;
-}
-
-/* ===== 搜索入口 ===== */
-.search-entry {
-  margin: 0 32rpx 24rpx;
-  padding: 16rpx 24rpx;
+.search-input-wrap {
+  flex: 1;
   background: rgba(255,255,255,0.6);
   border: 1rpx solid rgba(184,150,62,0.2);
   border-radius: 16rpx;
+  padding: 16rpx 24rpx;
 }
 
-.search-entry-text {
+.search-input {
   font-size: 28rpx;
+  color: #2c2418;
+  letter-spacing: 2rpx;
+  width: 100%;
+}
+
+.search-placeholder {
   color: #b0a590;
   letter-spacing: 2rpx;
+}
+
+.search-cancel {
+  font-size: 28rpx;
+  color: #5a4e3c;
+  letter-spacing: 2rpx;
+  white-space: nowrap;
 }
 
 /* ===== 筛选栏 ===== */
@@ -75,21 +76,19 @@
   font-size: 22rpx;
   color: #8a7e6c;
   letter-spacing: 2rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .result-count {
   color: #b8963e;
 }
 
-/* ===== 对联列表 ===== */
-.browse-list {
+/* ===== 结果列表 ===== */
+.search-list {
   flex: 1;
   padding: 0 32rpx;
 }
 
+/* ===== 对联卡片（复用 browse 样式） ===== */
 .browse-card {
   background: rgba(255,255,255,0.5);
   border: 1rpx solid rgba(184,150,62,0.12);
@@ -156,6 +155,11 @@
   border-radius: 12rpx;
   padding: 2rpx 12rpx;
   letter-spacing: 1rpx;
+}
+
+/* ===== 高亮文本 ===== */
+.highlight {
+  color: #b8963e;
 }
 
 /* ===== 加载更多 ===== */

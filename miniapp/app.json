@@ -3,7 +3,8 @@
     "pages/home/home",
     "pages/browse/browse",
     "pages/collection/collection",
-    "pages/detail/detail"
+    "pages/detail/detail",
+    "pages/search/search"
   ],
   "window": {
     "navigationStyle": "custom",
