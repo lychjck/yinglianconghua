@@ -88,6 +88,10 @@ func (r *MySQLRepository) ListCouplets(filter CoupletFilter) ([]CoupletV2, int, 
 	return nil, 0, fmt.Errorf("v2 API not supported on MySQL yet")
 }
 
+func (r *MySQLRepository) SearchCouplets(filter CoupletFilter) ([]CoupletV2, int, error) {
+	return nil, 0, fmt.Errorf("v2 API not supported on MySQL yet")
+}
+
 func (r *MySQLRepository) GetParagraphByID(id int) (*Paragraph, error) {
 	return nil, fmt.Errorf("v2 API not supported on MySQL yet")
 }

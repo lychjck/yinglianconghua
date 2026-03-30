@@ -30,6 +30,7 @@ type CoupletFilter struct {
 	Dynasty  string `json:"dynasty"`
 	Occasion string `json:"occasion"`
 	BookName string `json:"book_name"`
+	Keyword  string `json:"keyword"`
 	Page     int    `json:"page"`
 	PageSize int    `json:"page_size"`
 }

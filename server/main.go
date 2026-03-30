@@ -111,6 +111,7 @@ func main() {
 
 	// v2 API 路由（LLM 提取数据）
 	r.HandleFunc("/api/v2/couplets/random", getRandomCoupletV2).Methods("GET")
+	r.HandleFunc("/api/v2/couplets/search", searchCouplets).Methods("GET")
 	r.HandleFunc("/api/v2/couplets/{id}", getCoupletByID).Methods("GET")
 	r.HandleFunc("/api/v2/couplets", listCouplets).Methods("GET")
 	r.HandleFunc("/api/v2/paragraphs/{id}", getParagraphByID).Methods("GET")

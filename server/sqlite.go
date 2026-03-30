@@ -272,6 +272,74 @@ func (r *SQLiteRepository) ListCouplets(filter CoupletFilter) ([]CoupletV2, int,
 	return couplets, total, nil
 }
 
+func (r *SQLiteRepository) SearchCouplets(filter CoupletFilter) ([]CoupletV2, int, error) {
+	where := "WHERE (first LIKE '%' || ? || '%' OR second LIKE '%' || ? || '%' OR author LIKE '%' || ? || '%') AND confidence >= 0.5"
+	args := []interface{}{filter.Keyword, filter.Keyword, filter.Keyword}
+
+	if filter.Dynasty != "" {
+		where += " AND dynasty = ?"
+		args = append(args, filter.Dynasty)
+	}
+	if filter.Occasion != "" {
+		where += " AND occasion = ?"
+		args = append(args, filter.Occasion)
+	}
+	if filter.BookName != "" {
+		where += " AND book_name = ?"
+		args = append(args, filter.BookName)
+	}
+
+	// 去重：按 first+second 分组，取 confidence 最高的记录
+	// 使用子查询先找到每组最优 id，再用外层查询取完整字段
+	dedup := fmt.Sprintf(
+		`SELECT MIN(id) FROM couplets %s GROUP BY first, second`,
+		where,
+	)
+
+	// 查询去重后总数
+	var total int
+	countSQL := fmt.Sprintf("SELECT COUNT(*) FROM (%s)", dedup)
+	if err := r.db.QueryRow(countSQL, args...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	// 分页参数
+	pageSize := filter.PageSize
+	if pageSize <= 0 || pageSize > 50 {
+		pageSize = 20
+	}
+	offset := (filter.Page - 1) * pageSize
+	if offset < 0 {
+		offset = 0
+	}
+
+	// 用 IN 子查询取去重后的完整记录
+	querySQL := fmt.Sprintf(
+		"SELECT %s FROM couplets WHERE id IN (SELECT MIN(id) FROM couplets %s GROUP BY first, second) ORDER BY id ASC LIMIT ? OFFSET ?",
+		coupletV2Columns, where,
+	)
+	queryArgs := append(args, pageSize, offset)
+	rows, err := r.db.Query(querySQL, queryArgs...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var couplets []CoupletV2
+	for rows.Next() {
+		c, err := scanCoupletV2(rows)
+		if err != nil {
+			return nil, 0, err
+		}
+		couplets = append(couplets, *c)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
+	return couplets, total, nil
+}
+
 func (r *SQLiteRepository) GetParagraphByID(id int) (*Paragraph, error) {
 	var p Paragraph
 	err := r.db.QueryRow(

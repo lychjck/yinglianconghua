@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"unicode/utf8"
 
 	"github.com/gorilla/mux"
 )
@@ -182,5 +183,63 @@ func getFilterOptions(w http.ResponseWriter, r *http.Request) {
 		Dynasties: dynasties,
 		Occasions: occasions,
 		Books:     books,
+	})
+}
+
+func searchCouplets(w http.ResponseWriter, r *http.Request) {
+	log.Printf("[API] %s %s - Searching couplets", r.Method, r.URL.Path)
+	q := r.URL.Query()
+
+	keyword := q.Get("keyword")
+	if keyword == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "keyword is required"})
+		return
+	}
+	if utf8.RuneCountInString(keyword) > 50 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "keyword too long (max 50 characters)"})
+		return
+	}
+
+	page, _ := strconv.Atoi(q.Get("page"))
+	if page < 1 {
+		page = 1
+	}
+	pageSize, _ := strconv.Atoi(q.Get("page_size"))
+	if pageSize <= 0 || pageSize > 50 {
+		pageSize = 20
+	}
+
+	filter := CoupletFilter{
+		Keyword:  keyword,
+		Dynasty:  q.Get("dynasty"),
+		Occasion: q.Get("occasion"),
+		BookName: q.Get("book_name"),
+		Page:     page,
+		PageSize: pageSize,
+	}
+
+	data, total, err := repo.SearchCouplets(filter)
+	if err != nil {
+		log.Printf("[Error] Failed to search couplets: %v", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
+		return
+	}
+
+	if data == nil {
+		data = []CoupletV2{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(CoupletListResponse{
+		Data:     data,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
 	})
 }

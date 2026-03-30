@@ -21,6 +21,8 @@ type Repository interface {
 	GetCoupletByID(id int) (*CoupletV2, error)
 	// ListCouplets 按筛选条件分页查询对联
 	ListCouplets(filter CoupletFilter) ([]CoupletV2, int, error)
+	// SearchCouplets 按关键词搜索对联，支持与筛选条件组合
+	SearchCouplets(filter CoupletFilter) ([]CoupletV2, int, error)
 	// GetParagraphByID 根据 id 获取原文段落
 	GetParagraphByID(id int) (*Paragraph, error)
 	// GetDistinctDynasties 获取所有不重复的朝代
