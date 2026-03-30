@@ -1,0 +1,7 @@
+{
+  "name": "yinglianconghua-miniapp-tests",
+  "private": true,
+  "devDependencies": {
+    "fast-check": "^3.0.0"
+  }
+}
