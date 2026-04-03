@@ -1,6 +1,6 @@
 App({
   globalData: {
-    apiBaseUrl: 'http://175.178.191.108:8023'
+    apiBaseUrl: 'https://api.yinglian.site'
     // apiBaseUrl: 'http://127.0.0.1:8080'
   },
 
